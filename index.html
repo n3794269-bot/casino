@@ -1,0 +1,790 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root {
+    --bg: var(--tg-theme-bg-color, #0a0a0f);
+    --text: var(--tg-theme-text-color, #f0f0f5);
+    --hint: var(--tg-theme-hint-color, #7a7a8a);
+    --accent: #ffb800;
+    --win: #00e676;
+    --lose: #ff3d57;
+    --gold: linear-gradient(135deg, #ffd700, #ffb800 40%, #ff8c00);
+    --card: linear-gradient(145deg, rgba(30,30,45,0.95), rgba(15,15,25,0.95));
+    --glass: rgba(255,255,255,0.06);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 20% 0%, rgba(255,184,0,0.08), transparent 50%),
+      radial-gradient(circle at 80% 100%, rgba(255,107,0,0.08), transparent 50%);
+    color: var(--text);
+    padding-bottom: 80px; min-height: 100vh;
+  }
+  .header {
+    position: sticky; top: 0; z-index: 50; padding: 14px 18px;
+    background: rgba(10,10,15,0.85); backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255,184,0,0.15);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .brand { font-size: 18px; font-weight: 800;
+    background: var(--gold); -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; }
+  .balance-pill {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--card); border: 1px solid rgba(255,184,0,0.3);
+    padding: 8px 14px; border-radius: 999px; font-size: 15px; font-weight: 700;
+    box-shadow: 0 0 20px rgba(255,184,0,0.15);
+  }
+  .admin-crown {
+    background: var(--gold); color: #000; font-weight: 800;
+    padding: 6px 12px; border-radius: 999px; font-size: 12px;
+  }
+  .content { padding: 18px; max-width: 500px; margin: 0 auto; }
+  .hidden { display: none !important; }
+  h2 { font-size: 22px; margin: 6px 0 18px;
+    background: var(--gold); -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; }
+  h3 { font-size: 16px; margin: 12px 0 10px; }
+  .btn {
+    padding: 14px 20px; border-radius: 14px; border: none;
+    background: var(--gold); color: #1a1a1a; font-size: 16px; font-weight: 800;
+    cursor: pointer; transition: transform 0.1s;
+    box-shadow: 0 4px 20px rgba(255,140,0,0.3);
+  }
+  .btn:active { transform: scale(0.96); }
+  .btn-sec { background: var(--glass); color: var(--text);
+    border: 1px solid rgba(255,255,255,0.12); box-shadow: none; }
+  .btn-ghost { background: transparent; color: var(--hint); box-shadow: none; }
+  .slot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .slot-card {
+    border-radius: 18px; padding: 18px 14px; text-align: center;
+    cursor: pointer; position: relative; overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    transition: transform 0.15s; min-height: 110px;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+  }
+  .slot-card:active { transform: scale(0.95); }
+  .slot-card .slot-emoji { font-size: 36px; margin-bottom: 8px; }
+  .slot-card .slot-name { font-size: 14px; font-weight: 700; }
+  .slot-card .slot-mult { font-size: 11px; color: var(--accent); margin-top: 4px; }
+  .reels-wrap {
+    margin: 20px 0; padding: 24px 16px; border-radius: 20px;
+    background: linear-gradient(145deg, #000, #1a1a25);
+    border: 2px solid rgba(255,184,0,0.25);
+    box-shadow: inset 0 0 40px rgba(255,184,0,0.1), 0 8px 30px rgba(0,0,0,0.5);
+    display: flex; justify-content: center; gap: 10px;
+    min-height: 130px; align-items: center;
+  }
+  .reel {
+    font-size: 52px; width: 70px; height: 90px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.03); border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .reel.spinning { animation: spinblur 0.1s infinite; }
+  @keyframes spinblur {
+    0%,100% { transform: translateY(0); filter: blur(0); }
+    50% { transform: translateY(-6px); filter: blur(2px); }
+  }
+  .reel.win { animation: pop 0.4s; box-shadow: 0 0 20px var(--accent); }
+  @keyframes pop { 0%{transform:scale(1)} 50%{transform:scale(1.25)} 100%{transform:scale(1)} }
+  .msg { text-align: center; padding: 12px; font-size: 16px; font-weight: 700; min-height: 28px; }
+  .win-text { color: var(--win); text-shadow: 0 0 15px rgba(0,230,118,0.6); }
+  .lose-text { color: var(--lose); }
+  .bet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+  .bet-btn {
+    padding: 18px; border-radius: 14px; border: 1px solid rgba(255,184,0,0.2);
+    background: var(--card); color: var(--text); font-size: 18px; font-weight: 800;
+    cursor: pointer; transition: transform 0.1s, border-color 0.2s;
+  }
+  .bet-btn:active { transform: scale(0.95); border-color: var(--accent); }
+  .bet-coin { font-size: 12px; color: var(--hint); display: block; margin-top: 2px; font-weight: 500; }
+  .cards-row {
+    display: flex; gap: 8px; justify-content: center;
+    margin: 14px 0; flex-wrap: wrap; min-height: 100px; align-items: center;
+  }
+  .card {
+    width: 64px; height: 90px; border-radius: 10px;
+    background: linear-gradient(145deg, #fff, #e8e8e8);
+    color: #1a1a1a; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    font-weight: 800; font-size: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+  }
+  .card.red { color: #d32f2f; }
+  .card.back { background: linear-gradient(135deg, #1a237e, #283593); color: transparent; }
+  .hand-label { text-align: center; color: var(--hint); font-size: 13px; margin: 8px 0 4px; }
+  .hand-total { text-align: center; font-weight: 700; font-size: 15px; color: var(--accent); }
+  .roulette-colors { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0; }
+  .roul-btn {
+    padding: 22px; border-radius: 16px; font-size: 16px; font-weight: 800;
+    border: none; cursor: pointer; color: #fff; transition: transform 0.1s;
+  }
+  .roul-btn.red { background: linear-gradient(135deg, #ff3d57, #c62828); }
+  .roul-btn.black { background: linear-gradient(135deg, #2a2a35, #000); }
+  .roul-btn.green { background: linear-gradient(135deg, #00e676, #00897b); grid-column: 1/-1; }
+  .roul-btn:active { transform: scale(0.95); }
+  .crash-display {
+    text-align: center; padding: 40px 20px; border-radius: 20px;
+    background: var(--card); border: 2px solid rgba(255,184,0,0.2); margin: 16px 0;
+  }
+  .crash-mult {
+    font-size: 64px; font-weight: 900;
+    background: var(--gold); -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; line-height: 1;
+  }
+  .crash-mult.crashed {
+    background: linear-gradient(135deg, #ff3d57, #c62828);
+    -webkit-background-clip: text; background-clip: text;
+  }
+  .tabs {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
+    background: rgba(10,10,15,0.92); backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255,184,0,0.15);
+    display: flex; padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+  }
+  .tab {
+    flex: 1; padding: 8px 4px; text-align: center; cursor: pointer;
+    font-size: 11px; color: var(--hint); font-weight: 600;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+  }
+  .tab .tab-icon { font-size: 20px; }
+  .tab.active { color: var(--accent); }
+  .admin-section {
+    margin: 14px 0; padding: 16px; background: var(--card);
+    border-radius: 16px; border: 1px solid rgba(255,184,0,0.15);
+  }
+  .admin-stat { display: flex; justify-content: space-between; padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 14px; }
+  .admin-stat:last-child { border-bottom: none; }
+  .admin-stat .val { color: var(--accent); font-weight: 700; }
+  .admin-item {
+    padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.06);
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 8px; font-size: 13px;
+  }
+  .admin-item:last-child { border-bottom: none; }
+  .admin-item-info { flex: 1; min-width: 0; }
+  .admin-item-info .name { font-weight: 700; }
+  .admin-item-info .sub { color: var(--hint); font-size: 11px; margin-top: 2px; }
+  .small-btn { padding: 8px 14px; font-size: 14px; border-radius: 10px;
+    border: none; cursor: pointer; font-weight: 700; min-width: 44px; }
+  .btn-ok { background: linear-gradient(135deg, #00e676, #00897b); color: #000; }
+  .btn-no { background: linear-gradient(135deg, #ff3d57, #c62828); color: #fff; }
+  .input {
+    padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(0,0,0,0.3); color: var(--text);
+    font-size: 16px; width: 100%; margin: 8px 0;
+  }
+  .input:focus { outline: none; border-color: var(--accent); }
+  .profile-card {
+    padding: 20px; border-radius: 18px; background: var(--card);
+    border: 1px solid rgba(255,184,0,0.15); text-align: center; margin-bottom: 14px;
+  }
+  .profile-bal {
+    font-size: 42px; font-weight: 900;
+    background: var(--gold); -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; line-height: 1.1;
+  }
+  .profile-label { color: var(--hint); font-size: 13px; margin-top: 4px; }
+  .hist-item { display: flex; justify-content: space-between;
+    padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; }
+  .hist-item .game { color: var(--hint); }
+  .hist-item .amt { font-weight: 700; }
+  .req-card {
+    padding: 20px; border-radius: 16px; background: var(--card);
+    border: 1px solid rgba(255,184,0,0.2); margin: 12px 0;
+  }
+  .req-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; }
+  .req-row .lbl { color: var(--hint); }
+  .req-row .val { font-weight: 700; }
+  .copy-card {
+    background: rgba(255,184,0,0.1); border: 1px dashed rgba(255,184,0,0.4);
+    padding: 12px; border-radius: 12px; margin: 12px 0;
+    font-size: 18px; font-weight: 800; text-align: center;
+    color: var(--accent); letter-spacing: 1px; cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="brand">🎰 LUCKY SPIN</div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <div class="admin-crown hidden" id="admin-crown">👑</div>
+    <div class="balance-pill"><span>💰</span><span id="bal">0</span></div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- SLOTS -->
+  <div id="tab-slots">
+    <h2>Слоты</h2>
+    <div class="slot-grid" id="slot-list"></div>
+    <div id="slot-game" class="hidden">
+      <button class="btn btn-sec" onclick="backToSlots()" style="margin-bottom:14px;padding:10px 16px;font-size:14px">← Все слоты</button>
+      <h3 id="slot-title" style="text-align:center"></h3>
+      <div class="reels-wrap">
+        <div class="reel" id="r1">❓</div>
+        <div class="reel" id="r2">❓</div>
+        <div class="reel" id="r3">❓</div>
+      </div>
+      <div class="msg" id="slot-msg"></div>
+      <div class="bet-grid">
+        <button class="bet-btn" onclick="spin(100)">100<span class="bet-coin">ставка</span></button>
+        <button class="bet-btn" onclick="spin(500)">500<span class="bet-coin">ставка</span></button>
+        <button class="bet-btn" onclick="spin(1000)">1000<span class="bet-coin">ставка</span></button>
+        <button class="bet-btn" onclick="spin(5000)">5000<span class="bet-coin">ставка</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLACKJACK -->
+  <div id="tab-blackjack" class="hidden">
+    <h2>Блэкджек</h2>
+    <div id="bj-start">
+      <p style="color:var(--hint);margin-bottom:14px">Набери 21 или ближе к нему, чем дилер</p>
+      <div class="bet-grid">
+        <button class="bet-btn" onclick="bjStart(100)">100<span class="bet-coin">ставка</span></button>
+        <button class="bet-btn" onclick="bjStart(500)">500<span class="bet-coin">ставка</span></button>
+        <button class="bet-btn" onclick="bjStart(1000)">1000<span class="bet-coin">ставка</span></button>
+        <button class="bet-btn" onclick="bjStart(5000)">5000<span class="bet-coin">ставка</span></button>
+      </div>
+    </div>
+    <div id="bj-game" class="hidden">
+      <div class="hand-label">Дилер</div>
+      <div class="cards-row" id="bj-dealer"></div>
+      <div class="hand-total" id="bj-dealer-total"></div>
+      <div class="hand-label">Ты</div>
+      <div class="cards-row" id="bj-player"></div>
+      <div class="hand-total" id="bj-player-total"></div>
+      <div class="msg" id="bj-msg"></div>
+      <div id="bj-actions" class="hidden bet-grid">
+        <button class="bet-btn" onclick="bjAct('hit')" style="background:linear-gradient(135deg,#00e676,#00897b);color:#000">Взять</button>
+        <button class="bet-btn" onclick="bjAct('stand')" style="background:linear-gradient(135deg,#ff3d57,#c62828);color:#fff">Хватит</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROULETTE -->
+  <div id="tab-roulette" class="hidden">
+    <h2>Рулетка</h2>
+    <div id="roul-start">
+      <p style="color:var(--hint);margin-bottom:14px">Выбери ставку</p>
+      <div class="bet-grid">
+        <button class="bet-btn" onclick="setRoulAmt(100)">100</button>
+        <button class="bet-btn" onclick="setRoulAmt(500)">500</button>
+        <button class="bet-btn" onclick="setRoulAmt(1000)">1000</button>
+        <button class="bet-btn" onclick="setRoulAmt(5000)">5000</button>
+      </div>
+      <div id="roul-pick" class="hidden" style="margin-top:20px">
+        <p style="text-align:center;color:var(--accent);font-weight:700;margin-bottom:12px">Ставка: <span id="roul-amt">0</span></p>
+        <div class="roulette-colors">
+          <button class="roul-btn red" onclick="roulSpin('red')">🔴 Красное<br><small>x2</small></button>
+          <button class="roul-btn black" onclick="roulSpin('black')">⚫ Чёрное<br><small>x2</small></button>
+          <button class="roul-btn green" onclick="roulSpin('green')">🟢 Зелёное<br><small>x14</small></button>
+        </div>
+      </div>
+      <div class="msg" id="roul-msg"></div>
+    </div>
+  </div>
+
+  <!-- CRASH -->
+  <div id="tab-crash" class="hidden">
+    <h2>Краш</h2>
+    <div id="crash-start">
+      <p style="color:var(--hint);margin-bottom:14px">Множитель растёт. Забери до краша!</p>
+      <div class="bet-grid">
+        <button class="bet-btn" onclick="crashStart(100)">100</button>
+        <button class="bet-btn" onclick="crashStart(500)">500</button>
+        <button class="bet-btn" onclick="crashStart(1000)">1000</button>
+        <button class="bet-btn" onclick="crashStart(5000)">5000</button>
+      </div>
+    </div>
+    <div id="crash-game" class="hidden">
+      <div class="crash-display"><div class="crash-mult" id="crash-mult">1.00x</div></div>
+      <button class="btn" style="width:100%" onclick="crashCash()">Забрать</button>
+      <div class="msg" id="crash-msg"></div>
+    </div>
+  </div>
+
+  <!-- PROFILE -->
+  <div id="tab-profile" class="hidden">
+    <h2>Профиль</h2>
+    <div class="profile-card">
+      <div class="profile-bal" id="prof-bal">0</div>
+      <div class="profile-label">монет на балансе</div>
+    </div>
+    <button class="btn" style="width:100%;margin-bottom:10px" onclick="showDeposit()">💰 Пополнить</button>
+    <button class="btn btn-sec" style="width:100%;margin-bottom:18px" onclick="switchTab('withdraw')">💸 Вывод</button>
+    <h3>История</h3>
+    <div id="history-list"></div>
+  </div>
+
+  <!-- ADMIN -->
+  <div id="tab-admin" class="hidden">
+    <h2>👑 Админ-панель</h2>
+    <div id="admin-stats"></div>
+    <h3>Депозиты</h3>
+    <div id="admin-deposits"></div>
+    <h3>Выводы</h3>
+    <div id="admin-withdrawals"></div>
+    <h3>Юзеры</h3>
+    <div id="admin-users"></div>
+  </div>
+
+  <!-- DEPOSIT -->
+  <div id="tab-deposit" class="hidden">
+    <h2>Пополнение</h2>
+    <div id="dep-packages"></div>
+    <div id="dep-req" class="hidden">
+      <div class="req-card">
+        <div class="req-row"><span class="lbl">Банк</span><span class="val" id="dep-bank"></span></div>
+        <div class="req-row"><span class="lbl">Получатель</span><span class="val" id="dep-name"></span></div>
+        <div class="req-row"><span class="lbl">Сумма</span><span class="val" id="dep-sum"></span></div>
+        <div class="req-row"><span class="lbl">Зачислим</span><span class="val" id="dep-coins"></span></div>
+      </div>
+      <div class="copy-card" id="dep-card" onclick="copyCard()"></div>
+      <p style="text-align:center;color:var(--hint);font-size:12px;margin-bottom:12px">Нажми чтобы скопировать</p>
+      <button class="btn" style="width:100%" onclick="claimDeposit()">✅ Я оплатил</button>
+      <button class="btn btn-ghost" style="width:100%;margin-top:10px" onclick="switchTab('profile')">Отмена</button>
+    </div>
+  </div>
+
+  <!-- WITHDRAW -->
+  <div id="tab-withdraw" class="hidden">
+    <h2>Вывод</h2>
+    <p style="color:var(--hint);margin-bottom:14px">Минимум 500 монет</p>
+    <input class="input" id="wd-amount" type="number" placeholder="Сумма монет">
+    <input class="input" id="wd-wallet" placeholder="Кошелёк USDT TRC-20">
+    <button class="btn" style="width:100%;margin-top:10px" onclick="submitWithdraw()">Отправить заявку</button>
+    <div class="msg" id="wd-msg"></div>
+    <button class="btn btn-ghost" style="width:100%;margin-top:10px" onclick="switchTab('profile')">Отмена</button>
+  </div>
+
+</div>
+
+<div class="tabs">
+  <div class="tab active" data-tab="slots" onclick="switchTab('slots')"><span class="tab-icon">🎰</span>Слоты</div>
+  <div class="tab" data-tab="blackjack" onclick="switchTab('blackjack')"><span class="tab-icon">🃏</span>Блэкджек</div>
+  <div class="tab" data-tab="roulette" onclick="switchTab('roulette')"><span class="tab-icon">🎡</span>Рулетка</div>
+  <div class="tab" data-tab="crash" onclick="switchTab('crash')"><span class="tab-icon">📈</span>Краш</div>
+  <div class="tab" data-tab="profile" onclick="switchTab('profile')"><span class="tab-icon">👤</span>Профиль</div>
+  <div class="tab hidden" data-tab="admin" id="admin-tab" onclick="switchTab('admin')"><span class="tab-icon">👑</span>Админ</div>
+</div>
+
+<script>
+const tg = Telegram.WebApp;
+tg.ready(); tg.expand();
+const auth = "tma " + tg.initData;
+let me = {balance:0, is_admin:false};
+let currentSlot = null;
+let roulAmount = 0;
+let crashState = null;
+
+async function api(path, body) {
+  const r = await fetch(path, {
+    method: body ? "POST" : "GET",
+    headers: {"Authorization": auth, "Content-Type": "application/json"},
+    body: body ? JSON.stringify(body) : undefined
+  });
+  if (!r.ok) { const e = await r.json().catch(()=>({detail:"error"})); throw e; }
+  return r.json();
+}
+
+function fmt(n) { return n.toLocaleString('ru'); }
+
+function updateBal(b) {
+  me.balance = b;
+  document.getElementById("bal").textContent = fmt(b);
+  const pb = document.getElementById("prof-bal");
+  if (pb) pb.textContent = fmt(b);
+}
+
+function switchTab(t) {
+  document.querySelectorAll(".content > div").forEach(d => d.classList.add("hidden"));
+  document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
+  document.getElementById("tab-"+t).classList.remove("hidden");
+  const tab = document.querySelector('.tab[data-tab="'+t+'"]');
+  if (tab) tab.classList.add("active");
+  if (t === "profile") loadHistory();
+  if (t === "admin") loadAdmin();
+}
+
+// ==== SLOTS ====
+let slotsData = {};
+async function loadSlots() {
+  slotsData = await api("/api/slots");
+  const list = document.getElementById("slot-list");
+  list.innerHTML = "";
+  for (const [key, s] of Object.entries(slotsData)) {
+    const d = document.createElement("div");
+    d.className = "slot-card";
+    d.style.background = s.bg;
+    const maxMult = Math.max(...Object.values(s.payouts));
+    d.innerHTML = `<div class="slot-emoji">${s.symbols[0]}</div>
+      <div class="slot-name">${s.name}</div>
+      <div class="slot-mult">до x${maxMult}</div>`;
+    d.onclick = () => openSlot(key);
+    list.appendChild(d);
+  }
+}
+
+function openSlot(key) {
+  currentSlot = key;
+  const s = slotsData[key];
+  document.getElementById("slot-list").classList.add("hidden");
+  document.getElementById("slot-game").classList.remove("hidden");
+  document.getElementById("slot-title").textContent = s.name;
+  document.getElementById("r1").textContent = s.symbols[0];
+  document.getElementById("r2").textContent = s.symbols[1];
+  document.getElementById("r3").textContent = s.symbols[2];
+  document.getElementById("slot-msg").textContent = "";
+}
+
+function backToSlots() {
+  document.getElementById("slot-list").classList.remove("hidden");
+  document.getElementById("slot-game").classList.add("hidden");
+  document.getElementById("slot-msg").textContent = "";
+}
+
+async function spin(amount) {
+  if (!currentSlot) return;
+  const s = slotsData[currentSlot];
+  const reels = [document.getElementById("r1"), document.getElementById("r2"), document.getElementById("r3")];
+  document.getElementById("slot-msg").textContent = "";
+  reels.forEach(r => r.classList.add("spinning"));
+  let ticks = 0;
+  const tick = setInterval(() => {
+    reels.forEach(r => r.textContent = s.symbols[Math.floor(Math.random()*s.symbols.length)]);
+    ticks++;
+    if (ticks > 8) clearInterval(tick);
+  }, 70);
+  try {
+    const res = await api("/api/spin", {slot: currentSlot, amount});
+    setTimeout(() => {
+      clearInterval(tick);
+      reels.forEach(r => r.classList.remove("spinning"));
+      res.reels.forEach((sym, i) => {
+        reels[i].textContent = sym;
+        reels[i].classList.add("win");
+        setTimeout(() => reels[i].classList.remove("win"), 500);
+      });
+      const m = document.getElementById("slot-msg");
+      if (res.payout) {
+        m.innerHTML = `<span class="win-text">🎉 +${fmt(res.payout)} (x${res.mult})</span>`;
+      } else {
+        m.innerHTML = `<span class="lose-text">😢 -${fmt(amount)}</span>`;
+      }
+      updateBal(res.balance);
+    }, 600);
+  } catch(e) {
+    clearInterval(tick);
+    reels.forEach(r => r.classList.remove("spinning"));
+    document.getElementById("slot-msg").innerHTML = `<span class="lose-text">${e.detail || "Ошибка"}</span>`;
+  }
+}
+
+// ==== BLACKJACK ====
+function renderCards(rowId, cards, hideSecond) {
+  const row = document.getElementById(rowId);
+  row.innerHTML = "";
+  cards.forEach((c, i) => {
+    const div = document.createElement("div");
+    if (c === null) { div.className = "card back"; }
+    else {
+      div.className = "card " + (c >= 8 ? "red" : "");
+      div.innerHTML = `<div>${c}</div><div class="suit">${c>=8?"♥":"♠"}</div>`;
+    }
+    row.appendChild(div);
+  });
+}
+
+async function bjStart(amount) {
+  try {
+    const r = await api("/api/blackjack/start", {amount});
+    document.getElementById("bj-start").classList.add("hidden");
+    document.getElementById("bj-game").classList.remove("hidden");
+    renderCards("bj-dealer", r.dealer, true);
+    renderCards("bj-player", r.player, false);
+    document.getElementById("bj-dealer-total").textContent = r.dealer[0] + " + ?";
+    document.getElementById("bj-player-total").textContent = r.player.reduce((a,b)=>a+b,0);
+    document.getElementById("bj-msg").textContent = "";
+    document.getElementById("bj-actions").classList.remove("hidden");
+    bjState = {amount: amount, hidden: r.dealer_hidden, player: r.player};
+    updateBal(r.balance);
+  } catch(e) { alert(e.detail || "Ошибка"); }
+}
+
+let bjState = null;
+
+async function bjAct(act) {
+  try {
+    const r = await api("/api/blackjack/act", {
+      act: act,
+      player: bjState.player,
+      dealer_hidden: bjState.hidden,
+      amount: bjState.amount
+    });
+    bjState.player = r.player;
+    renderCards("bj-player", r.player, false);
+    document.getElementById("bj-player-total").textContent = r.player.reduce((a,b)=>a+b,0);
+
+    if (r.result === "playing") return;
+
+    document.getElementById("bj-actions").classList.add("hidden");
+    if (r.dealer) {
+      renderCards("bj-dealer", r.dealer, false);
+      document.getElementById("bj-dealer-total").textContent = r.dealer.reduce((a,b)=>a+b,0);
+    }
+    const m = document.getElementById("bj-msg");
+    if (r.result === "bust") m.innerHTML = `<span class="lose-text">💥 Перебор! -${fmt(bjState.amount)}</span>`;
+    else if (r.result === "win") m.innerHTML = `<span class="win-text">🎉 Победа! +${fmt(r.payout)}</span>`;
+    else if (r.result === "push") m.innerHTML = `<span style="color:var(--accent)">🤝 Ничья. Возврат ${fmt(r.payout)}</span>`;
+    else m.innerHTML = `<span class="lose-text">😢 Проигрыш -${fmt(bjState.amount)}</span>`;
+    updateBal(r.balance);
+    setTimeout(() => {
+      document.getElementById("bj-start").classList.remove("hidden");
+      document.getElementById("bj-game").classList.add("hidden");
+    }, 2500);
+  } catch(e) { alert(e.detail || "Ошибка"); }
+}
+
+// ==== ROULETTE ====
+function setRoulAmt(a) {
+  roulAmount = a;
+  document.getElementById("roul-pick").classList.remove("hidden");
+  document.getElementById("roul-amt").textContent = fmt(a);
+  document.getElementById("roul-msg").textContent = "";
+}
+
+async function roulSpin(color) {
+  try {
+    const r = await api("/api/roulette", {color, amount: roulAmount});
+    const m = document.getElementById("roul-msg");
+    const emoji = {red:"🔴", black:"⚫", green:"🟢"}[r.roll];
+    if (r.win) m.innerHTML = `<span class="win-text">${emoji} ${r.roll} — 🎉 +${fmt(r.payout)}</span>`;
+    else m.innerHTML = `<span class="lose-text">${emoji} ${r.roll} — 😢 -${fmt(roulAmount)}</span>`;
+    updateBal(r.balance);
+  } catch(e) { document.getElementById("roul-msg").innerHTML = `<span class="lose-text">${e.detail}</span>`; }
+}
+
+// ==== CRASH ====
+async function crashStart(amount) {
+  try {
+    const r = await api("/api/crash/start", {amount});
+    crashState = {amount, crash_at: r.crash_at, mult: 1.0, timer: null, cashed: false};
+    document.getElementById("crash-start").classList.add("hidden");
+    document.getElementById("crash-game").classList.remove("hidden");
+    document.getElementById("crash-mult").textContent = "1.00x";
+    document.getElementById("crash-mult").classList.remove("crashed");
+    document.getElementById("crash-msg").textContent = "";
+    document.getElementById("crash-cash-btn").disabled = false;
+    updateBal(r.balance);
+
+    crashState.timer = setInterval(() => {
+      crashState.mult += 0.03;
+      document.getElementById("crash-mult").textContent = crashState.mult.toFixed(2) + "x";
+      if (crashState.mult >= crashState.crash_at && !crashState.cashed) {
+        clearInterval(crashState.timer);
+        crashState.cashed = true;
+        document.getElementById("crash-mult").classList.add("crashed");
+        document.getElementById("crash-mult").textContent = "💥 " + crashState.crash_at.toFixed(2) + "x";
+        document.getElementById("crash-msg").innerHTML = `<span class="lose-text">Краш! -${fmt(crashState.amount)}</span>`;
+        document.getElementById("crash-cash-btn").disabled = true;
+        setTimeout(() => {
+          document.getElementById("crash-start").classList.remove("hidden");
+          document.getElementById("crash-game").classList.add("hidden");
+        }, 2000);
+      }
+    }, 100);
+  } catch(e) { alert(e.detail || "Ошибка"); }
+}
+
+async function crashCash() {
+  if (!crashState || crashState.cashed) return;
+  crashState.cashed = true;
+  clearInterval(crashState.timer);
+  try {
+    const r = await api("/api/crash/cash", {
+      amount: crashState.amount,
+      multiplier: crashState.mult,
+      crash_at: crashState.crash_at
+    });
+    if (r.win) {
+      document.getElementById("crash-msg").innerHTML = `<span class="win-text">🎉 Забрал +${fmt(r.payout)}</span>`;
+      updateBal(r.balance);
+    } else {
+      document.getElementById("crash-msg").innerHTML = `<span class="lose-text">💥 Краш! -${fmt(crashState.amount)}</span>`;
+      updateBal(r.balance);
+    }
+    document.getElementById("crash-cash-btn").disabled = true;
+    setTimeout(() => {
+      document.getElementById("crash-start").classList.remove("hidden");
+      document.getElementById("crash-game").classList.add("hidden");
+    }, 2000);
+  } catch(e) { alert(e.detail || "Ошибка"); }
+}
+
+// ==== PROFILE / HISTORY ====
+async function loadHistory() {
+  try {
+    const rows = await api("/api/history");
+    const list = document.getElementById("history-list");
+    if (!rows.length) { list.innerHTML = '<p style="color:var(--hint);text-align:center;padding:20px">Нет истории</p>'; return; }
+    list.innerHTML = rows.map(r => {
+      const cls = r.payout > 0 ? "win-text" : "lose-text";
+      const sign = r.payout > 0 ? "+" : "";
+      return `<div class="hist-item">
+        <span class="game">${r.game}</span>
+        <span class="amt ${cls}">${sign}${fmt(r.payout - r.amount)}</span>
+      </div>`;
+    }).join("");
+  } catch(e) {}
+}
+
+// ==== DEPOSIT ====
+let depData = null;
+async function showDeposit() {
+  if (!depData) depData = await api("/api/deposit/info");
+  switchTab("deposit");
+  document.getElementById("dep-req").classList.add("hidden");
+  const pkgs = document.getElementById("dep-packages");
+  pkgs.innerHTML = "";
+  for (const [rub, info] of Object.entries(depData.packages)) {
+    const btn = document.createElement("button");
+    btn.className = "btn btn-sec";
+    btn.style.cssText = "width:100%;margin:6px 0;text-align:left;padding:16px";
+    const bonus = info.bonus ? ` (+${info.bonus}%)` : "";
+    btn.innerHTML = `<b>${rub} ₽</b> → ${fmt(info.coins)} монет <span style="color:var(--accent)">${bonus}</span>`;
+    btn.onclick = () => pickDeposit(+rub);
+    pkgs.appendChild(btn);
+  }
+}
+
+let currentDep = null;
+function pickDeposit(rub) {
+  const info = depData.packages[rub];
+  currentDep = {rub, coins: info.coins};
+  document.getElementById("dep-packages").classList.add("hidden");
+  document.getElementById("dep-req").classList.remove("hidden");
+  document.getElementById("dep-bank").textContent = depData.bank;
+  document.getElementById("dep-name").textContent = depData.name;
+  document.getElementById("dep-sum").textContent = rub + " ₽";
+  document.getElementById("dep-coins").textContent = fmt(info.coins);
+  document.getElementById("dep-card").textContent = depData.card;
+}
+
+function copyCard() {
+  const text = depData.card;
+  if (navigator.clipboard) navigator.clipboard.writeText(text);
+  else { const t = document.createElement("textarea"); t.value = text; document.body.appendChild(t); t.select(); document.execCommand("copy"); t.remove(); }
+  tg.showAlert ? tg.showAlert("Номер скопирован") : alert("Скопировано");
+}
+
+async function claimDeposit() {
+  if (!currentDep) return;
+  try {
+    const r = await api("/api/deposit/claim", {rub: currentDep.rub});
+    tg.showAlert ? tg.showAlert("Заявка создана. Проверка в течение дня.") : alert("Заявка создана");
+    switchTab("profile");
+  } catch(e) { alert(e.detail || "Ошибка"); }
+}
+
+// ==== WITHDRAW ====
+async function submitWithdraw() {
+  const amount = +document.getElementById("wd-amount").value;
+  const wallet = document.getElementById("wd-wallet").value.trim();
+  if (!amount || amount < 500) return alert("Минимум 500");
+  if (!wallet) return alert("Введи кошелёк");
+  try {
+    const r = await api("/api/withdraw", {amount, wallet});
+    document.getElementById("wd-msg").innerHTML = `<span class="win-text">✅ ${r.msg}</span>`;
+    updateBal((await api("/api/me")).balance);
+    setTimeout(() => switchTab("profile"), 2000);
+  } catch(e) { document.getElementById("wd-msg").innerHTML = `<span class="lose-text">${e.detail}</span>`; }
+}
+
+// ==== ADMIN ====
+async function loadAdmin() {
+  if (!me.is_admin) { switchTab("slots"); return; }
+  const stats = await api("/api/admin/stats");
+  document.getElementById("admin-stats").innerHTML = `
+    <div class="admin-section">
+      <div class="admin-stat"><span>Юзеров</span><span class="val">${stats.users}</span></div>
+      <div class="admin-stat"><span>Монет у всех</span><span class="val">${fmt(stats.total_balance)}</span></div>
+      <div class="admin-stat"><span>Депозитов pending</span><span class="val">${stats.pending_deposits}</span></div>
+      <div class="admin-stat"><span>Выводов pending</span><span class="val">${stats.pending_withdrawals}</span></div>
+    </div>`;
+
+  const deps = await api("/api/admin/deposits");
+  const dl = document.getElementById("admin-deposits");
+  if (!deps.length) dl.innerHTML = '<p style="color:var(--hint);padding:8px">Нет</p>';
+  else dl.innerHTML = deps.map(d => `
+    <div class="admin-item">
+      <div class="admin-item-info">
+        <div class="name">#${d.id} · <code>${d.user_id}</code></div>
+        <div class="sub">${d.rub} ₽ → ${fmt(d.coins)} монет</div>
+      </div>
+      <button class="small-btn btn-ok" onclick="admDep(${d.id},'ok')">✓</button>
+      <button class="small-btn btn-no" onclick="admDep(${d.id},'no')">✗</button>
+    </div>`).join("");
+
+  const wds = await api("/api/admin/withdrawals");
+  const wl = document.getElementById("admin-withdrawals");
+  if (!wds.length) wl.innerHTML = '<p style="color:var(--hint);padding:8px">Нет</p>';
+  else wl.innerHTML = wds.map(w => `
+    <div class="admin-item">
+      <div class="admin-item-info">
+        <div class="name">#${w.id} · <code>${w.user_id}</code></div>
+        <div class="sub">${fmt(w.amount)} · ${w.wallet}</div>
+      </div>
+      <button class="small-btn btn-ok" onclick="admWd(${w.id},'ok')">✓</button>
+      <button class="small-btn btn-no" onclick="admWd(${w.id},'no')">✗</button>
+    </div>`).join("");
+
+  const users = await api("/api/admin/users");
+  document.getElementById("admin-users").innerHTML = users.slice(0,30).map(u => `
+    <div class="admin-item">
+      <div class="admin-item-info">
+        <div class="name">${u.username ? "@"+u.username : "id"+u.id}</div>
+        <div class="sub"><code>${u.id}</code> · ${fmt(u.balance)}${u.banned?" 🚫":""}</div>
+      </div>
+    </div>`).join("");
+}
+
+async function admDep(id, act) {
+  await api(`/api/admin/deposit/${id}/${act}`, {});
+  loadAdmin();
+}
+async function admWd(id, act) {
+  await api(`/api/admin/withdraw/${id}/${act}`, {});
+  loadAdmin();
+}
+
+// ==== INIT ====
+async function init() {
+  try {
+    me = await api("/api/me");
+    updateBal(me.balance);
+    if (me.is_admin) {
+      document.getElementById("admin-crown").classList.remove("hidden");
+      document.getElementById("admin-tab").classList.remove("hidden");
+    }
+    await loadSlots();
+  } catch(e) {
+    document.body.innerHTML = '<div style="padding:40px;text-align:center">Ошибка авторизации. Открой через Telegram.</div>';
+  }
+}
+
+init();
+</script>
+</body>
+</html>
