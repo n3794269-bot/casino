@@ -127,9 +127,6 @@
   /* PROFILE */
   .profile-card { padding: 30px; border-radius: 16px; background: linear-gradient(180deg, #111a2e, #02050a); border: 2px solid #B8860B; text-align: center; margin-bottom: 20px; box-shadow: 0 0 30px rgba(255,215,0,0.1); }
   .profile-bal { font-family: 'Cinzel', serif; font-size: 52px; font-weight: 900; background: var(--gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  
-  .save-btn { width: 100%; padding: 18px; border-radius: 8px; background: var(--gold); color: #000; font-weight: 900; font-size: 16px; border: none; cursor: pointer; text-transform: uppercase; margin-bottom: 10px; box-shadow: 0 5px 15px rgba(255,215,0,0.3); }
-  .save-btn:active { transform: scale(0.98); }
 </style>
 </head>
 <body>
@@ -266,9 +263,7 @@
     <div style="color:#888; font-size:14px; margin-bottom:10px;">БАЛАНС</div>
     <div class="profile-bal" id="prof-bal">0</div>
   </div>
-  <!-- ВОТ ОНА, КНОПКА СОХРАНЕНИЯ -->
-  <button class="save-btn" onclick="saveAndExit()">💾 СОХРАНИТЬ И ВЫЙТИ</button>
-  <button class="save-btn" onclick="tg.close()" style="background:transparent; border: 1px solid #555; color:#888; box-shadow:none;">Выйти без сохранения</button>
+  <button class="spin-btn" onclick="tg.close()" style="width:100%; border-radius: 8px; height: 50px; font-size: 16px; background: var(--gold); color:#000; border:none;">Выйти в бот</button>
 </div>
 
 <!-- ТАБЫ -->
@@ -295,14 +290,16 @@
       if(document.getElementById("prof-bal")) document.getElementById("prof-bal").textContent = balance.toLocaleString('ru');
   }
 
-  // ЖЕЛЕЗОБЕТОННОЕ СОХРАНЕНИЕ ПО КНОПКЕ
-  function saveAndExit() {
+  // АВТОСОХРАНЕНИЕ ПРИ ЛЮБОМ ДЕЙСТВИИ (Сворачивание, закрытие и т.д.)
+  function autoSave() {
       tg.sendData(JSON.stringify({action: "sync", balance: balance}));
-      tg.close();
   }
 
-  // Резервное сохранение
-  window.addEventListener('beforeunload', () => { tg.sendData(JSON.stringify({action: "sync", balance: balance})); });
+  window.addEventListener('pagehide', autoSave);
+  document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') autoSave();
+  });
+  window.addEventListener('beforeunload', autoSave);
 
   function showScreen(screenId) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
