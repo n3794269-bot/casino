@@ -10,95 +10,90 @@
   :root {
     --gold: linear-gradient(180deg, #FFF5C3 0%, #FFD700 20%, #B8860B 80%, #8B6508 100%);
     --gold-text: #FFD700;
-    --bg: #050a14;
+    --bg: #02050a;
     --win: #00ff88;
     --lose: #ff3333;
-    --card-bg: #0e1e40;
   }
   
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
   
   body { 
     font-family: 'Montserrat', sans-serif; 
-    background: var(--bg);
+    background: radial-gradient(circle at 50% 0%, #0f244a 0%, var(--bg) 80%);
     color: #fff; 
     padding-bottom: 70px; 
     min-height: 100vh;
     overflow-x: hidden;
   }
 
-  /* HEADER */
-  .header { position: sticky; top: 0; z-index: 50; padding: 12px 15px; background: linear-gradient(to bottom, #0a1428, #050a14); border-bottom: 2px solid #B8860B; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 5px 15px rgba(0,0,0,0.8); }
+  .header { position: sticky; top: 0; z-index: 50; padding: 12px 15px; background: linear-gradient(to bottom, rgba(2,5,10,0.9), rgba(2,5,10,0.5)); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,215,0,0.3); display: flex; justify-content: space-between; align-items: center; }
   .brand { font-family: 'Cinzel', serif; font-size: 18px; font-weight: 900; background: var(--gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; }
-  .balance-box { display: flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.8); padding: 6px 12px; border-radius: 4px; border: 1px solid var(--gold-text); color: var(--gold-text); font-weight: 800; font-size: 15px; }
+  .balance-box { display: flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.8); padding: 6px 12px; border-radius: 4px; border: 1px solid var(--gold-text); color: var(--gold-text); font-weight: 800; font-size: 15px; box-shadow: 0 0 10px rgba(255,215,0,0.2); }
 
-  /* LOBBY */
-  .lobby-title { text-align: center; margin: 20px 0; font-family: 'Cinzel', serif; font-size: 20px; color: var(--gold-text); letter-spacing: 2px; text-transform: uppercase; text-shadow: 0 2px 10px rgba(255,215,0,0.3); }
-  .games-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 15px; }
+  .lobby-title { text-align: center; margin: 25px 0 15px; font-family: 'Cinzel', serif; font-size: 22px; color: var(--gold-text); letter-spacing: 2px; text-shadow: 0 2px 10px rgba(255,215,0,0.4); }
+  .games-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 15px; }
   
-  .game-card { 
-    border-radius: 10px; overflow: hidden; position: relative; height: 120px; 
-    border: 2px solid #333; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.8);
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
-    transition: transform 0.1s;
-    background: linear-gradient(135deg, #1a3b6e, #050a14);
-  }
+  .game-card { border-radius: 12px; overflow: hidden; position: relative; height: 130px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: transform 0.1s; box-shadow: 0 10px 20px rgba(0,0,0,0.6); }
   .game-card:active { transform: scale(0.96); border-color: var(--gold-text); }
-  .game-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); z-index: 1; }
+  .game-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to top, rgba(0,0,0,0.95), transparent 60%); z-index: 1; }
+  .game-icon { font-size: 45px; margin-bottom: 10px; z-index: 2; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.8)); }
+  .game-name { font-family: 'Cinzel', serif; font-size: 16px; color: #fff; font-weight: 900; z-index: 2; text-shadow: 0 2px 5px #000; letter-spacing: 1px;}
   
-  .game-icon { font-size: 40px; margin-bottom: 10px; z-index: 2; filter: drop-shadow(0 0 15px rgba(255,255,255,0.4)); }
-  .game-name { font-family: 'Cinzel', serif; font-size: 15px; color: #fff; font-weight: 700; z-index: 2; text-shadow: 0 2px 4px #000; }
-  
-  /* Карточки разных игр */
-  .bg-zeus { background: radial-gradient(circle, #1a3b6e, #050a14); }
-  .bg-hades { background: radial-gradient(circle, #6e1a1a, #050a14); }
-  .bg-bj { background: radial-gradient(circle, #1a6e3b, #050a14); }
-  .bg-roul { background: radial-gradient(circle, #6e1a5c, #050a14); }
-  .bg-crash { background: radial-gradient(circle, #6e5c1a, #050a14); }
+  .bg-zeus { background: radial-gradient(circle, #1e4a8a, #050a14); }
+  .bg-hades { background: radial-gradient(circle, #8a1e1e, #050a14); }
+  .bg-bj { background: radial-gradient(circle, #1e8a42, #050a14); }
+  .bg-roul { background: radial-gradient(circle, #8a1e6a, #050a14); }
+  .bg-crash { background: radial-gradient(circle, #8a6a1e, #050a14); }
 
-  /* ОБЩИЕ ЭКРАНЫ */
   .screen { display: none; padding: 15px; max-width: 500px; margin: 0 auto; }
-  .screen.active { display: block; }
+  .screen.active { display: block; animation: fadeIn 0.3s ease-out; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
   
-  .back-btn { background: rgba(0,0,0,0.6); border: 1px solid var(--gold-text); color: var(--gold-text); padding: 10px 15px; border-radius: 5px; font-weight: 800; cursor: pointer; margin-bottom: 15px; display: inline-block; }
+  .back-btn { background: rgba(0,0,0,0.6); border: 1px solid rgba(255,215,0,0.5); color: var(--gold-text); padding: 10px 15px; border-radius: 6px; font-weight: 800; cursor: pointer; margin-bottom: 15px; display: inline-block; font-size: 14px; }
 
-  .msg { text-align: center; margin-top: 15px; font-size: 16px; font-weight: 900; text-transform: uppercase; height: 25px; font-family: 'Cinzel'; }
-  .win-text { color: var(--win); text-shadow: 0 0 10px var(--win); }
+  .msg { text-align: center; margin-top: 15px; font-size: 18px; font-weight: 900; text-transform: uppercase; height: 25px; font-family: 'Cinzel'; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
+  .win-text { color: var(--win); text-shadow: 0 0 15px var(--win); }
   .lose-text { color: var(--lose); }
 
-  /* ====== СЛОТЫ ====== */
-  .machine-body { background: #0a1428; border: 3px solid #B8860B; border-radius: 12px; padding: 10px; box-shadow: 0 0 50px rgba(20, 58, 112, 0.8), inset 0 0 30px rgba(0,0,0,0.9); }
-  .reels-grid { display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(3, 1fr); gap: 4px; background: #000; border: 2px solid #333; border-radius: 6px; padding: 4px; height: 280px; position: relative; overflow: hidden; }
-  .cell { background: linear-gradient(180deg, #1a3b6e 0%, #0e1e40 50%, #081021 100%); border-radius: 4px; display: flex; justify-content: center; align-items: center; box-shadow: inset 0 0 15px rgba(0,0,0,0.9); border: 1px solid rgba(255,255,255,0.1); position: relative; overflow: hidden; }
-  .cell svg { width: 70%; height: 70%; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.8)) drop-shadow(0 0 10px rgba(255,215,0,0.3)); }
+  /* ====== ИГРОВОЙ АВТОМАТ ====== */
+  .machine-body { background: linear-gradient(180deg, #111a2e, #02050a); border: 2px solid #B8860B; border-radius: 16px; padding: 12px; box-shadow: 0 0 40px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(255, 215, 0, 0.1); }
+  .reels-container { position: relative; border-radius: 8px; overflow: hidden; border: 3px solid #222; background: #000; box-shadow: inset 0 0 30px #000; }
+  .reels-grid { display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(3, 1fr); gap: 3px; padding: 3px; height: 280px; }
+  .cell { background: linear-gradient(180deg, #1a2b4c 0%, #0e1628 50%, #050a14 100%); border-radius: 6px; display: flex; justify-content: center; align-items: center; box-shadow: inset 0 0 10px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.05); position: relative; overflow: hidden; }
+  .cell svg { width: 75%; height: 75%; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.9)) drop-shadow(0 0 8px rgba(255,215,0,0.4)); }
   .cell svg path { fill: url(#goldGrad); }
-  .glass-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 40%, transparent 60%, rgba(0,0,0,0.4) 100%); pointer-events: none; z-index: 10; border-radius: 6px; }
-  .reels-grid.spinning .cell { animation: blur 0.1s infinite; }
-  @keyframes blur { 0%,100% { transform: translateY(0); filter: blur(0); } 50% { transform: translateY(-10px); filter: blur(3px); } }
-  .win-line { position: absolute; top: 50%; left: 0; width: 100%; height: 4px; background: #ff0055; box-shadow: 0 0 15px #ff0055, 0 0 30px #ff0055; opacity: 0; transform: translateY(-50%); transition: opacity 0.3s; z-index: 20; }
+  
+  .glass-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 30%, transparent 70%, rgba(0,0,0,0.5) 100%); pointer-events: none; z-index: 10; }
+  .reels-grid.spinning .cell { animation: spinEffect 0.15s linear infinite; }
+  @keyframes spinEffect { 0% { transform: translateY(0); filter: blur(0); } 50% { transform: translateY(-10px); filter: blur(4px); } 100% { transform: translateY(0); filter: blur(0); } }
+
+  .win-line { position: absolute; top: 50%; left: 0; width: 100%; height: 4px; background: #ff0055; box-shadow: 0 0 20px #ff0055, 0 0 40px #ff0055; opacity: 0; transform: translateY(-50%); transition: opacity 0.3s; z-index: 20; }
   .win-line.active { opacity: 1; animation: pulse 0.5s infinite alternate; }
   @keyframes pulse { from { filter: brightness(1); } to { filter: brightness(2); } }
-  .cell.highlight { animation: winflash 0.5s infinite alternate; border-color: #ffd700; }
-  @keyframes winflash { from { box-shadow: inset 0 0 20px rgba(255,215,0,0.5); } to { box-shadow: inset 0 0 40px rgba(255,215,0,1); background: #3a2a0a; } }
+  
+  .cell.highlight { animation: winflash 0.5s infinite alternate; }
+  @keyframes winflash { from { box-shadow: inset 0 0 20px rgba(255,215,0,0.5); border-color: #ffd700; } to { box-shadow: inset 0 0 50px rgba(255,215,0,1); background: #2a1f0a; border-color: #fff; } }
 
-  .control-panel { margin-top: 10px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(180deg, #1a1a1a, #000); padding: 8px; border-radius: 8px; border: 1px solid #444; }
+  .control-panel { margin-top: 15px; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.6); padding: 10px; border-radius: 10px; border: 1px solid #333; }
   .bet-display { text-align: center; font-weight: 800; }
-  .bet-label { font-size: 10px; color: #888; }
-  .bet-value { font-size: 16px; color: var(--gold-text); }
-  .spin-btn { width: 70px; height: 70px; border-radius: 50%; background: radial-gradient(circle, #ff5555 0%, #aa0000 70%, #550000 100%); border: 3px solid var(--gold-text); color: #fff; font-family: 'Cinzel'; font-weight: 900; font-size: 14px; display: flex; justify-content: center; align-items: center; box-shadow: 0 5px 15px rgba(255,0,0,0.5), inset 0 2px 10px rgba(255,255,255,0.5); cursor: pointer; text-shadow: 0 2px 2px rgba(0,0,0,0.8); }
+  .bet-label { font-size: 10px; color: #888; letter-spacing: 1px; }
+  .bet-value { font-size: 20px; color: var(--gold-text); text-shadow: 0 0 10px rgba(255,215,0,0.5); }
+  
+  .spin-btn { width: 80px; height: 80px; border-radius: 50%; background: radial-gradient(circle, #ff4d4d 0%, #aa0000 80%, #550000 100%); border: 4px solid var(--gold-text); color: #fff; font-family: 'Cinzel'; font-weight: 900; font-size: 16px; display: flex; justify-content: center; align-items: center; box-shadow: 0 0 20px rgba(255,0,0,0.5), inset 0 3px 10px rgba(255,255,255,0.4); cursor: pointer; text-shadow: 0 2px 2px rgba(0,0,0,0.8); transition: 0.1s; }
   .spin-btn:active { transform: scale(0.9); }
-  .spin-btn:disabled { filter: grayscale(1); opacity: 0.7; }
-  .bet-buttons { display: flex; flex-direction: column; gap: 4px; }
-  .bet-btn { background: transparent; border: 1px solid #555; color: #fff; padding: 5px 10px; border-radius: 4px; font-size: 11px; font-weight: 800; cursor: pointer; }
-  .bet-btn.active { border-color: var(--gold-text); color: var(--gold-text); }
+  .spin-btn:disabled { filter: grayscale(1); opacity: 0.5; }
+
+  .bet-buttons { display: flex; flex-direction: column; gap: 5px; }
+  .bet-btn { background: transparent; border: 1px solid #555; color: #aaa; padding: 8px 12px; border-radius: 4px; font-size: 12px; font-weight: 800; cursor: pointer; transition: 0.2s; }
+  .bet-btn.active { border-color: var(--gold-text); color: var(--gold-text); background: rgba(255,215,0,0.1); box-shadow: 0 0 10px rgba(255,215,0,0.2); }
 
   /* ====== БЛЭКДЖЕК ====== */
-  .bj-table { background: radial-gradient(circle at center, #114a2b, #021a0e); border: 3px solid #B8860B; border-radius: 12px; padding: 15px; min-height: 300px; box-shadow: inset 0 0 50px #000; display: flex; flex-direction: column; justify-content: space-between; }
+  .bj-table { background: radial-gradient(circle at center, #114a2b, #021a0e); border: 2px solid #B8860B; border-radius: 16px; padding: 15px; min-height: 300px; box-shadow: inset 0 0 50px #000; display: flex; flex-direction: column; justify-content: space-between; }
   .bj-hand { text-align: center; }
   .bj-label { color: var(--gold-text); font-size: 12px; font-weight: 800; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
   .cards-row { display: flex; gap: 5px; justify-content: center; margin: 10px 0; min-height: 80px; }
-  .card { width: 55px; height: 80px; border-radius: 5px; background: #fff; color: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 900; font-size: 20px; box-shadow: 0 5px 10px rgba(0,0,0,0.6); position: relative; animation: deal 0.3s ease-out; }
-  @keyframes deal { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .card { width: 55px; height: 80px; border-radius: 6px; background: #fff; color: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 900; font-size: 20px; box-shadow: 0 5px 10px rgba(0,0,0,0.6); position: relative; animation: deal 0.3s ease-out; }
+  @keyframes deal { from { transform: translateY(-30px) rotate(10deg); opacity: 0; } to { transform: translateY(0) rotate(0); opacity: 1; } }
   .card.red { color: #d32f2f; }
   .card.back { background: repeating-linear-gradient(45deg, #111, #111 5px, #333 5px, #333 10px); border: 2px solid var(--gold-text); color: transparent; }
   .card .suit { font-size: 22px; }
@@ -106,35 +101,39 @@
   .bj-controls button { flex: 1; padding: 15px; border-radius: 8px; font-weight: 900; font-size: 14px; border: none; cursor: pointer; text-transform: uppercase; }
 
   /* ====== РУЛЕТКА ====== */
-  .roulette-table { background: radial-gradient(circle at center, #4a114a, #1a021a); border: 3px solid #B8860B; border-radius: 12px; padding: 15px; min-height: 300px; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: inset 0 0 50px #000; }
+  .roulette-table { background: radial-gradient(circle at center, #4a114a, #1a021a); border: 2px solid #B8860B; border-radius: 16px; padding: 15px; min-height: 300px; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: inset 0 0 50px #000; }
   .roul-bets { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin-top: 20px; }
-  .roul-btn { padding: 20px; border-radius: 8px; font-size: 16px; font-weight: 900; border: none; cursor: pointer; color: #fff; text-shadow: 0 2px 4px #000; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+  .roul-btn { padding: 25px; border-radius: 10px; font-size: 16px; font-weight: 900; border: none; cursor: pointer; color: #fff; text-shadow: 0 2px 4px #000; box-shadow: 0 5px 15px rgba(0,0,0,0.5); transition: 0.1s; }
+  .roul-btn:active { transform: scale(0.95); }
   .roul-btn.red { background: linear-gradient(135deg, #ff3d57, #8b0000); border: 1px solid #ff3d57; }
   .roul-btn.black { background: linear-gradient(135deg, #333, #000); border: 1px solid #555; }
   .roul-btn.green { background: linear-gradient(135deg, #00e676, #004d40); border: 1px solid #00e676; grid-column: 1/-1; }
 
   /* ====== КРАШ ====== */
-  .crash-table { background: radial-gradient(circle at bottom, #1a3b6e, #050a14); border: 3px solid #B8860B; border-radius: 12px; padding: 15px; min-height: 300px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: inset 0 0 50px #000; }
-  .crash-mult { font-family: 'Cinzel'; font-size: 50px; font-weight: 900; color: var(--gold-text); text-shadow: 0 0 20px rgba(255,215,0,0.5); margin-bottom: 10px; }
-  .crash-mult.crashed { color: var(--lose); text-shadow: 0 0 20px var(--lose); }
-  .rocket-track { width: 100%; height: 150px; position: relative; border-bottom: 2px solid #333; border-left: 2px solid #333; margin-bottom: 15px; overflow: hidden; }
+  .crash-table { background: radial-gradient(circle at bottom, #1a3b6e, #050a14); border: 2px solid #B8860B; border-radius: 16px; padding: 15px; min-height: 300px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: inset 0 0 50px #000; }
+  .crash-mult { font-family: 'Cinzel'; font-size: 56px; font-weight: 900; color: var(--gold-text); text-shadow: 0 0 25px rgba(255,215,0,0.6); margin-bottom: 10px; }
+  .crash-mult.crashed { color: var(--lose); text-shadow: 0 0 25px var(--lose); }
+  .rocket-track { width: 100%; height: 150px; position: relative; border-bottom: 2px solid #333; border-left: 2px solid #333; margin-bottom: 15px; overflow: hidden; background: rgba(0,0,0,0.3); border-radius: 8px; }
   .rocket { font-size: 35px; position: absolute; bottom: 0; left: 0; transition: all 0.1s linear; transform: rotate(45deg); filter: drop-shadow(0 0 10px #ff8c00); }
-  .rocket-trail { position: absolute; width: 3px; height: 3px; background: #ff8c00; border-radius: 50%; box-shadow: 0 0 10px 5px rgba(255, 140, 0, 0.8); transition: all 0.1s linear; }
+  .rocket-trail { position: absolute; width: 4px; height: 4px; background: #ff8c00; border-radius: 50%; box-shadow: 0 0 15px 8px rgba(255, 140, 0, 0.6); transition: all 0.1s linear; }
 
   /* TABS */
-  .tabs { position: fixed; bottom: 0; left: 0; right: 0; z-index: 150; background: rgba(5,10,20,0.95); backdrop-filter: blur(10px); border-top: 1px solid #B8860B; display: flex; padding: 8px 0 max(8px, env(safe-area-inset-bottom)); }
-  .tab { flex: 1; text-align: center; cursor: pointer; font-size: 10px; color: #555; font-weight: 800; display: flex; flex-direction: column; align-items: center; gap: 4px; text-transform: uppercase; }
-  .tab-icon { font-size: 20px; }
+  .tabs { position: fixed; bottom: 0; left: 0; right: 0; z-index: 150; background: rgba(2,5,10,0.95); backdrop-filter: blur(10px); border-top: 1px solid rgba(255,215,0,0.3); display: flex; padding: 8px 0 max(8px, env(safe-area-inset-bottom)); }
+  .tab { flex: 1; text-align: center; cursor: pointer; font-size: 11px; color: #555; font-weight: 800; display: flex; flex-direction: column; align-items: center; gap: 4px; text-transform: uppercase; transition: 0.2s; }
+  .tab-icon { font-size: 22px; }
   .tab.active { color: var(--gold-text); text-shadow: 0 0 10px rgba(255,215,0,0.5); }
+  .tab.active .tab-icon { transform: translateY(-3px); filter: drop-shadow(0 0 5px var(--gold-text)); }
 
   /* PROFILE */
-  .profile-card { padding: 30px; border-radius: 12px; background: #0a1428; border: 1px solid var(--gold-text); text-align: center; margin-bottom: 20px; box-shadow: 0 0 20px rgba(255,215,0,0.1); }
+  .profile-card { padding: 30px; border-radius: 16px; background: linear-gradient(180deg, #111a2e, #02050a); border: 2px solid #B8860B; text-align: center; margin-bottom: 20px; box-shadow: 0 0 30px rgba(255,215,0,0.1); }
   .profile-bal { font-family: 'Cinzel', serif; font-size: 52px; font-weight: 900; background: var(--gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  
+  .save-btn { width: 100%; padding: 18px; border-radius: 8px; background: var(--gold); color: #000; font-weight: 900; font-size: 16px; border: none; cursor: pointer; text-transform: uppercase; margin-bottom: 10px; box-shadow: 0 5px 15px rgba(255,215,0,0.3); }
+  .save-btn:active { transform: scale(0.98); }
 </style>
 </head>
 <body>
 
-<!-- ГРАДИЕНТЫ ДЛЯ SVG -->
 <svg style="width:0; height:0; position:absolute;">
   <defs>
     <linearGradient id="goldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -151,7 +150,7 @@
   <div class="balance-box"><span>💰</span> <span id="bal">0</span></div>
 </div>
 
-<!-- ЭКРАН ЛОББИ -->
+<!-- ЛОББИ -->
 <div id="screen-lobby" class="screen active">
   <div class="lobby-title">Выберите Игру</div>
   <div class="games-grid">
@@ -173,16 +172,18 @@
   </div>
 </div>
 
-<!-- ЭКРАН СЛОТОВ -->
+<!-- СЛОТЫ -->
 <div id="screen-slots" class="screen">
-  <button class="back-btn" onclick="showScreen('lobby')">← Назад</button>
+  <button class="back-btn" onclick="showScreen('lobby')">← В Лобби</button>
   <div class="machine-body">
-    <div class="reels-grid" id="reels">
-      <div class="cell" id="c0"></div><div class="cell" id="c1"></div><div class="cell" id="c2"></div><div class="cell" id="c3"></div><div class="cell" id="c4"></div>
-      <div class="cell" id="c5"></div><div class="cell" id="c6"></div><div class="cell" id="c7"></div><div class="cell" id="c8"></div><div class="cell" id="c9"></div>
-      <div class="cell" id="c10"></div><div class="cell" id="c11"></div><div class="cell" id="c12"></div><div class="cell" id="c13"></div><div class="cell" id="c14"></div>
-      <div class="glass-overlay"></div>
-      <div class="win-line" id="win-line"></div>
+    <div class="reels-container">
+      <div class="reels-grid" id="reels">
+        <div class="cell" id="c0"></div><div class="cell" id="c1"></div><div class="cell" id="c2"></div><div class="cell" id="c3"></div><div class="cell" id="c4"></div>
+        <div class="cell" id="c5"></div><div class="cell" id="c6"></div><div class="cell" id="c7"></div><div class="cell" id="c8"></div><div class="cell" id="c9"></div>
+        <div class="cell" id="c10"></div><div class="cell" id="c11"></div><div class="cell" id="c12"></div><div class="cell" id="c13"></div><div class="cell" id="c14"></div>
+        <div class="glass-overlay"></div>
+        <div class="win-line" id="win-line"></div>
+      </div>
     </div>
     <div class="control-panel">
       <div class="bet-buttons">
@@ -200,9 +201,9 @@
   <div class="msg" id="slot-msg"></div>
 </div>
 
-<!-- ЭКРАН БЛЭКДЖЕК -->
+<!-- БЛЭКДЖЕК -->
 <div id="screen-blackjack" class="screen">
-  <button class="back-btn" onclick="showScreen('lobby')">← Назад</button>
+  <button class="back-btn" onclick="showScreen('lobby')">← В Лобби</button>
   <div class="bj-table">
     <div class="bj-hand">
       <div class="bj-label">Дилер (<span id="bj-dealer-score">0</span>)</div>
@@ -220,11 +221,11 @@
   <div class="msg" id="bj-msg"></div>
 </div>
 
-<!-- ЭКРАН РУЛЕТКИ -->
+<!-- РУЛЕТКА -->
 <div id="screen-roulette" class="screen">
-  <button class="back-btn" onclick="showScreen('lobby')">← Назад</button>
+  <button class="back-btn" onclick="showScreen('lobby')">← В Лобби</button>
   <div class="roulette-table">
-    <div style="font-size: 60px; margin-bottom: 20px;">🎡</div>
+    <div style="font-size: 60px; margin-bottom: 20px; filter: drop-shadow(0 0 20px rgba(255,255,255,0.2));">🎡</div>
     <div style="color:#fff; font-weight:bold; margin-bottom:10px;">Ставка: <span id="roul-bet-display" style="color:var(--gold-text)">500</span></div>
     <div class="bet-buttons" style="flex-direction: row; gap: 10px; margin-bottom: 20px;">
       <button class="bet-btn" onclick="setRoulBet(100, this)">100</button>
@@ -240,9 +241,9 @@
   <div class="msg" id="roul-msg"></div>
 </div>
 
-<!-- ЭКРАН КРАШ -->
+<!-- КРАШ -->
 <div id="screen-crash" class="screen">
-  <button class="back-btn" onclick="showScreen('lobby')">← Назад</button>
+  <button class="back-btn" onclick="showScreen('lobby')">← В Лобби</button>
   <div class="crash-table">
     <div class="crash-mult" id="crash-mult">1.00x</div>
     <div class="rocket-track">
@@ -254,21 +255,23 @@
       <button class="bet-btn" onclick="startCrash(500)">500</button>
       <button class="bet-btn" onclick="startCrash(1000)">1000</button>
     </div>
-    <button class="spin-btn" id="crash-cashout-btn" onclick="cashOutCrash()" style="display:none; width: 120px; height: 50px; border-radius: 8px; background: var(--gold); color: #000; border: none;">ЗАБРАТЬ</button>
+    <button class="spin-btn" id="crash-cashout-btn" onclick="cashOutCrash()" style="display:none; width: 140px; height: 50px; border-radius: 8px; background: var(--gold); color: #000; border: none; font-size:18px;">ЗАБРАТЬ</button>
   </div>
   <div class="msg" id="crash-msg"></div>
 </div>
 
-<!-- ЭКРАН ПРОФИЛЯ -->
+<!-- ПРОФИЛЬ -->
 <div id="screen-profile" class="screen">
   <div class="profile-card">
     <div style="color:#888; font-size:14px; margin-bottom:10px;">БАЛАНС</div>
     <div class="profile-bal" id="prof-bal">0</div>
   </div>
-  <button class="spin-btn" onclick="tg.close()" style="width:100%; border-radius: 8px; height: 50px; font-size: 16px; background: var(--gold); color:#000; border:none;">Выйти в бот</button>
+  <!-- ВОТ ОНА, КНОПКА СОХРАНЕНИЯ -->
+  <button class="save-btn" onclick="saveAndExit()">💾 СОХРАНИТЬ И ВЫЙТИ</button>
+  <button class="save-btn" onclick="tg.close()" style="background:transparent; border: 1px solid #555; color:#888; box-shadow:none;">Выйти без сохранения</button>
 </div>
 
-<!-- НИЖНЕЕ МЕНЮ -->
+<!-- ТАБЫ -->
 <div class="tabs">
   <div class="tab active" onclick="showScreen('lobby')"><span class="tab-icon">🎰</span>Казино</div>
   <div class="tab" onclick="showScreen('profile')"><span class="tab-icon">👤</span>Профиль</div>
@@ -292,6 +295,13 @@
       if(document.getElementById("prof-bal")) document.getElementById("prof-bal").textContent = balance.toLocaleString('ru');
   }
 
+  // ЖЕЛЕЗОБЕТОННОЕ СОХРАНЕНИЕ ПО КНОПКЕ
+  function saveAndExit() {
+      tg.sendData(JSON.stringify({action: "sync", balance: balance}));
+      tg.close();
+  }
+
+  // Резервное сохранение
   window.addEventListener('beforeunload', () => { tg.sendData(JSON.stringify({action: "sync", balance: balance})); });
 
   function showScreen(screenId) {
@@ -309,13 +319,11 @@
     "scepter": `<svg viewBox="0 0 24 24"><path d="M6 22l6-6 2 2-6 6-2-2zm10-14c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-1.5 3.5l-7 7 1.5 1.5 7-7-1.5-1.5z"/></svg>`
   };
   const SLOT_SYMBOLS = ["bolt", "cup", "crown", "eye", "scepter"];
-  let currentSlot = 'zeus';
   let currentBet = 500;
   let currentSpins = parseInt(localStorage.getItem('royal_spins')) || 0;
 
   function openGame(game) {
       if (game === 'zeus' || game === 'hades') {
-          currentSlot = game;
           showScreen('slots');
           document.getElementById('slot-msg').textContent = "";
           document.getElementById('win-line').classList.remove('active');
@@ -350,15 +358,11 @@
     
     msg.textContent = ""; winLine.classList.remove('active');
     document.querySelectorAll('.cell').forEach(c => c.classList.remove('highlight'));
+    
     grid.classList.add('spinning');
     document.getElementById('snd-spin').play();
 
-    let interval = setInterval(() => {
-        for (let i = 0; i < 15; i++) document.getElementById(`c${i}`).innerHTML = SVGS[SLOT_SYMBOLS[Math.floor(Math.random() * SLOT_SYMBOLS.length)]];
-    }, 50);
-
     setTimeout(() => {
-        clearInterval(interval);
         grid.classList.remove('spinning');
         
         let winChance = currentSpins < 8 ? 0.85 : 0.15;
