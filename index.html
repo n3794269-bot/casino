@@ -6,17 +6,17 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
   :root { 
-    --bg: #0a0a0f; --text: #f0f0f5; --hint: #7a7a8a; --accent: #ffb800; --win: #00e676; --lose: #ff3d57; --card: rgba(20,20,30,0.9);
-    --gold: linear-gradient(135deg, #ffd700, #ffb800 40%, #ff8c00);
+    --bg: #0a0a0f; --text: #f0f0f5; --hint: #7a7a8a; --accent: #ffb800; --win: #00e676; --lose: #ff3d57; 
+    --card: rgba(20,20,30,0.95); --gold: linear-gradient(135deg, #ffd700, #ffb800 40%, #ff8c00);
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
   
-  /* КРАСИВЫЙ ФОН КАЗИНО */
+  /* КРАСИВЫЙ ФОН БЕЗ КАРТИНОК (всегда загрузится) */
   body { 
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
     color: var(--text); padding-bottom: 80px; 
-    background-image: linear-gradient(rgba(10,10,15,0.85), rgba(10,10,15,0.95)), url('https://images.unsplash.com/photo-1596838132731-3301c3fd4317?q=80&w=1000&auto=format&fit=crop');
-    background-size: cover; background-position: center; background-attachment: fixed;
+    background: radial-gradient(circle at 50% 0%, #1a1a2e 0%, #0a0a0f 80%);
+    background-attachment: fixed;
   }
 
   /* ЛЕНТА ПОБЕД */
@@ -35,7 +35,7 @@
   .btn-sec { background: #222; color: #fff; }
   
   .slot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .slot-card { border-radius: 18px; padding: 18px 14px; text-align: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); min-height: 110px; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+  .slot-card { border-radius: 18px; padding: 18px 14px; text-align: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); min-height: 110px; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: 0 10px 20px rgba(0,0,0,0.5); background: #15151f; }
   .slot-card .slot-emoji { font-size: 36px; margin-bottom: 8px; text-shadow: 0 0 10px rgba(255,255,255,0.5); } .slot-card .slot-name { font-size: 14px; font-weight: 800; }
   
   .reels-wrap { margin: 20px 0; padding: 24px 16px; border-radius: 20px; background: rgba(0,0,0,0.8); border: 2px solid rgba(255,184,0,0.3); display: flex; justify-content: center; gap: 10px; min-height: 130px; align-items: center; box-shadow: inset 0 0 30px rgba(255,184,0,0.1); }
@@ -73,12 +73,6 @@
 </head>
 <body>
 
-<!-- Звуки -->
-<audio id="snd-spin" src="https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3" preload="auto"></audio>
-<audio id="snd-win" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3" preload="auto"></audio>
-<audio id="snd-lose" src="https://assets.mixkit.co/active_storage/sfx/2955/2955-preview.mp3" preload="auto"></audio>
-
-<!-- Лента побед -->
 <div class="live-feed" id="live-feed"></div>
 
 <div class="header">
@@ -87,20 +81,17 @@
 </div>
 
 <div class="content">
-  <!-- СЛОТЫ -->
   <div id="tab-slots"><h2>Слоты</h2><div class="slot-grid" id="slot-list"></div>
     <div id="slot-game" class="hidden"><button class="btn btn-sec" onclick="backToSlots()" style="padding:10px; font-size:14px">← Назад</button><h3 id="slot-title" style="text-align:center; margin-top:10px;"></h3>
       <div class="reels-wrap"><div class="reel" id="r1">❓</div><div class="reel" id="r2">❓</div><div class="reel" id="r3">❓</div></div>
       <div class="msg" id="slot-msg"></div><div class="bet-grid"><button class="bet-btn" onclick="spin(100)">100</button><button class="bet-btn" onclick="spin(500)">500</button><button class="bet-btn" onclick="spin(1000)">1000</button><button class="bet-btn" onclick="spin(5000)">5000</button></div></div></div>
   
-  <!-- БЛЭКДЖЕК -->
   <div id="tab-blackjack" class="hidden"><h2>Блэкджек</h2>
     <div id="bj-start"><p style="color:var(--hint); text-align:center; margin-bottom:14px; font-weight:700;">Набери 21 или ближе, чем дилер</p>
       <div class="bet-grid"><button class="bet-btn" onclick="bjStart(100)">100</button><button class="bet-btn" onclick="bjStart(500)">500</button><button class="bet-btn" onclick="bjStart(1000)">1000</button><button class="bet-btn" onclick="bjStart(5000)">5000</button></div></div>
     <div id="bj-game" class="hidden"><div class="hand-label">Дилер (<span id="bj-dealer-total">?</span>)</div><div class="cards-row" id="bj-dealer"></div><div class="hand-label">Ты (<span id="bj-player-total">?</span>)</div><div class="cards-row" id="bj-player"></div><div class="msg" id="bj-msg"></div>
       <div id="bj-actions" class="hidden bet-grid"><button class="bet-btn" onclick="bjAct('hit')" style="background:#00e676;color:#000">Взять</button><button class="bet-btn" onclick="bjAct('stand')" style="background:#ff3d57;color:#fff">Хватит</button></div></div></div>
   
-  <!-- РУЛЕТКА -->
   <div id="tab-roulette" class="hidden"><h2>Рулетка</h2>
     <div id="roul-start"><p style="text-align:center; color:var(--hint); margin-bottom: 10px; font-weight:700;">Выбери ставку</p>
       <div class="bet-grid"><button class="bet-btn" onclick="setRoulAmt(100)">100</button><button class="bet-btn" onclick="setRoulAmt(500)">500</button><button class="bet-btn" onclick="setRoulAmt(1000)">1000</button><button class="bet-btn" onclick="setRoulAmt(5000)">5000</button></div>
@@ -108,13 +99,11 @@
         <div class="roulette-colors"><button class="roul-btn red" onclick="roulSpin('red')">🔴 Красное x2</button><button class="roul-btn black" onclick="roulSpin('black')">⚫ Чёрное x2</button><button class="roul-btn green" onclick="roulSpin('green')">🟢 Зелёное x14</button></div></div>
       <div class="msg" id="roul-msg"></div></div></div>
   
-  <!-- КРАШ -->
   <div id="tab-crash" class="hidden"><h2>Краш</h2>
     <div id="crash-start"><p style="text-align:center; color:var(--hint); margin-bottom: 10px; font-weight:700;">Множитель растет. Забери до краша!</p>
       <div class="bet-grid"><button class="bet-btn" onclick="crashStart(100)">100</button><button class="bet-btn" onclick="crashStart(500)">500</button><button class="bet-btn" onclick="crashStart(1000)">1000</button><button class="bet-btn" onclick="crashStart(5000)">5000</button></div></div>
     <div id="crash-game" class="hidden"><div class="crash-mult" id="crash-mult">1.00x</div><div class="crash-container"><div class="rocket" id="rocket">🚀</div></div><button class="btn" onclick="crashCash()" id="crash-cash-btn">ЗАБРАТЬ</button><div class="msg" id="crash-msg"></div></div></div>
   
-  <!-- ПРОФИЛЬ -->
   <div id="tab-profile" class="hidden"><h2>Профиль</h2><div class="profile-card"><div class="profile-bal" id="prof-bal">0</div><div style="color:var(--hint); font-size:14px; margin-top:5px;">монет на балансе</div></div>
     <button class="btn" onclick="tg.close()">💰 Пополнить в боте</button><button class="btn btn-sec" onclick="withdraw()">💸 Вывод (от 2000)</button><div class="msg" id="prof-msg"></div></div>
 </div>
@@ -128,50 +117,43 @@
 </div>
 
 <script>
-  const tg = Telegram.WebApp;
+  // ЗАЩИТА ОТ ОШИБОК (если открыть не в телеге)
+  const tg = window.Telegram?.WebApp || { ready: ()=>{}, expand: ()=>{}, close: ()=>{}, showAlert: alert };
   tg.ready(); tg.expand();
 
-  // БАЗА БАЛАНСА
-  let balance = localStorage.getItem('casino_v3_balance');
-  if (balance === null) { balance = 100; localStorage.setItem('casino_v3_balance', 100); localStorage.setItem('casino_v3_spins', 0); } 
+  let balance = localStorage.getItem('casino_v4_balance');
+  if (balance === null) { balance = 100; localStorage.setItem('casino_v4_balance', 100); localStorage.setItem('casino_v4_spins', 0); } 
   else { balance = parseInt(balance); }
-  let spins = parseInt(localStorage.getItem('casino_v3_spins')) || 0;
+  let spins = parseInt(localStorage.getItem('casino_v4_spins')) || 0;
 
-  // ПОПОЛНЕНИЕ ИЗ БОТА
   const urlParams = new URLSearchParams(window.location.search);
   const addAmount = urlParams.get('add');
   if (addAmount) {
       balance += parseInt(addAmount);
-      localStorage.setItem('casino_v3_balance', balance);
+      localStorage.setItem('casino_v4_balance', balance);
       window.history.replaceState({}, document.title, window.location.pathname);
       setTimeout(() => tg.showAlert(`✅ Баланс пополнен на ${addAmount} монет!`), 500);
   }
-
-  // ЗВУКИ
-  const sndSpin = document.getElementById("snd-spin");
-  const sndWin = document.getElementById("snd-win");
-  const sndLose = document.getElementById("snd-lose");
 
   // ЛЕНТА ПОБЕД
   const fakeUsers = ["@vanya_99", "@lucky_boy", "@mikhail_k", "@dragon_slayer", "@casino_king", "@pro_100", "@zheka", "@maks", "@sanya", "@vlad"];
   const fakeGames = ["в Зевсе", "в Драконе", "в Краше", "в Рулетке", "в Блэкджеке", "в Фараоне"];
   function showFakeWin() {
       const feed = document.getElementById("live-feed");
+      if(!feed) return;
       const user = fakeUsers[Math.floor(Math.random() * fakeUsers.length)];
       const game = fakeGames[Math.floor(Math.random() * fakeGames.length)];
       const amount = Math.floor(Math.random() * 50000) + 1000;
-      
       const div = document.createElement("div");
       div.className = "feed-item";
-      div.innerHTML = `🔥 ${user} только что выиграл ${amount.toLocaleString('ru')} ${game}!`;
-      
+      div.innerHTML = `🔥 ${user} выиграл ${amount.toLocaleString('ru')} ${game}!`;
       feed.appendChild(div);
       setTimeout(() => div.remove(), 6000);
   }
   setInterval(showFakeWin, 7000);
 
   function updateBal() {
-      localStorage.setItem('casino_v3_balance', balance); localStorage.setItem('casino_v3_spins', spins);
+      localStorage.setItem('casino_v4_balance', balance); localStorage.setItem('casino_v4_spins', spins);
       document.getElementById("bal").textContent = balance.toLocaleString('ru'); document.getElementById("prof-bal").textContent = balance.toLocaleString('ru');
   }
   function switchTab(t) {
@@ -181,19 +163,20 @@
       document.querySelector('.tab[data-tab="'+t+'"]').classList.add("active");
   }
 
-  // СЛОТЫ
   const SLOTS = { 
-    "zeus": {"name":"⚡ Зевс", "symbols":["⚡","🏛️","🍇","🏺","👑"], "bg":"linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)"}, 
-    "pharaoh": {"name":"🐫 Фараон", "symbols":["🐫","🏺","🐍","☀️","👁️"], "bg":"linear-gradient(135deg,#3e2723,#5d4037,#8d6e63)"}, 
-    "dragon": {"name":"🐉 Дракон", "symbols":["🐉","🔥","💎","🏮","🎋"], "bg":"linear-gradient(135deg,#b71c1c,#d32f2f,#f57c00)"}, 
-    "classic": {"name":"🎰 Классика", "symbols":["🍒","🍋","🍊","🔔","7️⃣"], "bg":"linear-gradient(135deg,#1b5e20,#2e7d32,#388e3c)"}, 
-    "space": {"name":"🌌 Космос", "symbols":["🚀","🌙","⭐","🪐","👽"], "bg":"linear-gradient(135deg,#000428,#004e92,#000428)"}, 
-    "dead": {"name":"💀 Мёртвый", "symbols":["💀","🦴","🕷️","🕸️","🩸"], "bg":"linear-gradient(135deg,#1a0000,#330000,#4d0000)"} 
+    "zeus": {"name":"⚡ Зевс", "symbols":["⚡","🏛️","🍇","🏺","👑"]}, 
+    "pharaoh": {"name":"🐫 Фараон", "symbols":["🐫","🏺","🐍","☀️","👁️"]}, 
+    "dragon": {"name":"🐉 Дракон", "symbols":["🐉","🔥","💎","🏮","🎋"]}, 
+    "classic": {"name":"🎰 Классика", "symbols":["🍒","🍋","🍊","🔔","7️⃣"]}, 
+    "space": {"name":"🌌 Космос", "symbols":["🚀","🌙","⭐","🪐","👽"]}, 
+    "dead": {"name":"💀 Мёртвый", "symbols":["💀","🦴","🕷️","🕸️","🩸"]} 
   };
   let currentSlot = null;
   const list = document.getElementById("slot-list");
+  
+  // ЖЕЛЕЗОБЕТОННАЯ ЗАГРУЗКА СЛОТОВ
   for (const [key, s] of Object.entries(SLOTS)) {
-    const d = document.createElement("div"); d.className = "slot-card"; d.style.background = s.bg; d.innerHTML = `<div class="slot-emoji">${s.symbols[0]}</div><div class="slot-name">${s.name}</div>`;
+    const d = document.createElement("div"); d.className = "slot-card"; d.innerHTML = `<div class="slot-emoji">${s.symbols[0]}</div><div class="slot-name">${s.name}</div>`;
     d.onclick = () => { currentSlot = key; document.getElementById("slot-list").classList.add("hidden"); document.getElementById("slot-game").classList.remove("hidden"); document.getElementById("slot-title").textContent = s.name; document.getElementById("slot-msg").textContent = ""; };
     list.appendChild(d);
   }
@@ -202,26 +185,22 @@
   function spin(amount) {
     if (balance < amount) return document.getElementById("slot-msg").innerHTML = '<span class="lose-text">Мало монет!</span>';
     balance -= amount; updateBal();
-    sndSpin.play(); // ЗВУК КРУТКИ
     const s = SLOTS[currentSlot]; const reels = [document.getElementById("r1"), document.getElementById("r2"), document.getElementById("r3")];
     document.getElementById("slot-msg").textContent = ""; reels.forEach(r => r.classList.add("spinning"));
     setTimeout(() => {
       reels.forEach(r => r.classList.remove("spinning"));
       let winChance = spins < 8 ? 0.85 : 0.15; let win = Math.random() < winChance;
       if (win) {
-        sndWin.play(); // ЗВУК ВЫИГРЫША
         let sym = s.symbols[Math.floor(Math.random() * 3)]; reels.forEach(r => { r.textContent = sym; r.classList.add("win"); setTimeout(()=>r.classList.remove("win"),500); });
         let mult = Math.floor(Math.random() * 4) + 2; let payout = amount * mult; balance += payout; updateBal();
         document.getElementById("slot-msg").innerHTML = `<span class="win-text">🎉 +${payout} (x${mult})</span>`;
       } else {
-        sndLose.play(); // ЗВУК ПРОИГРЫША
         reels.forEach(r => r.textContent = s.symbols[Math.floor(Math.random() * 5)]); document.getElementById("slot-msg").innerHTML = `<span class="lose-text">😢 -${amount}</span>`;
       }
       spins++; updateBal();
     }, 600);
   }
 
-  // БЛЭКДЖЕК
   let bjState = null; function draw() { return Math.floor(Math.random() * 10) + 2; }
   function bjStart(amount) {
     if (balance < amount) return alert("Мало монет!"); balance -= amount; updateBal();
@@ -241,7 +220,6 @@
     if (act === 'hit') {
       bjState.player.push(draw()); pTotal = bjState.player.reduce((a,b)=>a+b,0);
       if (pTotal > 21) {
-        sndLose.play();
         document.getElementById("bj-msg").innerHTML = '<span class="lose-text">Перебор!</span>'; document.getElementById("bj-actions").classList.add("hidden"); renderBj(false);
         setTimeout(() => { document.getElementById("bj-start").classList.remove("hidden"); document.getElementById("bj-game").classList.add("hidden"); }, 2500);
       } else renderBj(true);
@@ -249,24 +227,22 @@
       let dTotal = bjState.dealer.reduce((a,b)=>a+b,0);
       while (dTotal < 17) { bjState.dealer.push(draw()); dTotal = bjState.dealer.reduce((a,b)=>a+b,0); }
       renderBj(false); document.getElementById("bj-actions").classList.add("hidden");
-      if (dTotal > 21 || pTotal > dTotal) { sndWin.play(); document.getElementById("bj-msg").innerHTML = '<span class="win-text">Победа!</span>'; balance += bjState.amount * 2; updateBal(); } 
+      if (dTotal > 21 || pTotal > dTotal) { document.getElementById("bj-msg").innerHTML = '<span class="win-text">Победа!</span>'; balance += bjState.amount * 2; updateBal(); } 
       else if (pTotal === dTotal) { document.getElementById("bj-msg").innerHTML = 'Ничья. Возврат.'; balance += bjState.amount; updateBal(); } 
-      else { sndLose.play(); document.getElementById("bj-msg").innerHTML = '<span class="lose-text">Дилер победил</span>'; }
+      else { document.getElementById("bj-msg").innerHTML = '<span class="lose-text">Дилер победил</span>'; }
       setTimeout(() => { document.getElementById("bj-start").classList.remove("hidden"); document.getElementById("bj-game").classList.add("hidden"); }, 2500);
     }
   }
 
-  // РУЛЕТКА
   let roulAmount = 0; function setRoulAmt(a) { roulAmount = a; document.getElementById("roul-pick").classList.remove("hidden"); document.getElementById("roul-amt").textContent = a; }
   function roulSpin(color) {
     if (balance < roulAmount) return document.getElementById("roul-msg").innerHTML = '<span class="lose-text">Мало монет!</span>';
     balance -= roulAmount; updateBal(); let rand = Math.random(); let rolledColor = rand < 0.48 ? 'red' : rand < 0.96 ? 'black' : 'green'; let win = rolledColor === color;
     const m = document.getElementById("roul-msg");
-    if (win) { sndWin.play(); let mult = color === 'green' ? 14 : 2; let payout = roulAmount * mult; balance += payout; updateBal(); m.innerHTML = `<span class="win-text">🎉 Выпало ${color}! +${payout}</span>`; } 
-    else { sndLose.play(); m.innerHTML = `<span class="lose-text">😢 Выпало ${rolledColor}. Проигрыш -${roulAmount}</span>`; }
+    if (win) { let mult = color === 'green' ? 14 : 2; let payout = roulAmount * mult; balance += payout; updateBal(); m.innerHTML = `<span class="win-text">🎉 Выпало ${color}! +${payout}</span>`; } 
+    else { m.innerHTML = `<span class="lose-text">😢 Выпало ${rolledColor}. Проигрыш -${roulAmount}</span>`; }
   }
 
-  // КРАШ
   let crashState = null;
   function crashStart(amount) {
     if (balance < amount) return alert("Мало монет!"); balance -= amount; updateBal();
@@ -279,7 +255,6 @@
       let rocket = document.getElementById("rocket"); rocket.style.bottom = Math.min((crashState.mult - 1) * 80, 150) + 'px'; rocket.style.left = Math.min((crashState.mult - 1) * 80, 200) + 'px';
       if (crashState.mult >= crashState.crashAt) {
         clearInterval(crashState.timer); crashState.done = true; document.getElementById("crash-mult").textContent = "💥 " + crashState.crashAt.toFixed(2) + "x"; document.getElementById("crash-mult").classList.add("crashed");
-        sndLose.play();
         document.getElementById("crash-msg").innerHTML = '<span class="lose-text">Краш!</span>'; document.getElementById("crash-cash-btn").disabled = true;
         setTimeout(() => { document.getElementById("crash-start").classList.remove("hidden"); document.getElementById("crash-game").classList.add("hidden"); }, 2000);
       }
@@ -287,7 +262,6 @@
   }
   function crashCash() {
     if (!crashState || crashState.done) return; crashState.done = true; clearInterval(crashState.timer); let payout = Math.floor(crashState.amount * crashState.mult); balance += payout; updateBal();
-    sndWin.play();
     document.getElementById("crash-msg").innerHTML = `<span class="win-text">Забрал +${payout}</span>`; document.getElementById("crash-cash-btn").disabled = true;
     setTimeout(() => { document.getElementById("crash-start").classList.remove("hidden"); document.getElementById("crash-game").classList.add("hidden"); }, 2000);
   }
@@ -297,6 +271,7 @@
       document.getElementById("prof-msg").innerHTML = '<span class="win-text">Заявка на вывод ' + balance.toLocaleString('ru') + ' монет отправлена!</span>';
       setTimeout(() => tg.close(), 2500);
   }
+  
   updateBal();
 </script>
 </body>
