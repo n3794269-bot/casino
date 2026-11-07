@@ -55,7 +55,7 @@
   .win-text { color: var(--win); text-shadow: 0 0 15px var(--win); }
   .lose-text { color: var(--lose); }
 
-  /* ====== ИГРОВОЙ АВТОМАТ ====== */
+  /* ИГРОВОЙ АВТОМАТ */
   .machine-body { background: linear-gradient(180deg, #111a2e, #02050a); border: 2px solid #B8860B; border-radius: 16px; padding: 12px; box-shadow: 0 0 40px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(255, 215, 0, 0.1); }
   .reels-container { position: relative; border-radius: 8px; overflow: hidden; border: 3px solid #222; background: #000; box-shadow: inset 0 0 30px #000; }
   .reels-grid { display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(3, 1fr); gap: 3px; padding: 3px; height: 280px; }
@@ -87,7 +87,7 @@
   .bet-btn { background: transparent; border: 1px solid #555; color: #aaa; padding: 8px 12px; border-radius: 4px; font-size: 12px; font-weight: 800; cursor: pointer; transition: 0.2s; }
   .bet-btn.active { border-color: var(--gold-text); color: var(--gold-text); background: rgba(255,215,0,0.1); box-shadow: 0 0 10px rgba(255,215,0,0.2); }
 
-  /* ====== БЛЭКДЖЕК ====== */
+  /* БЛЭКДЖЕК */
   .bj-table { background: radial-gradient(circle at center, #114a2b, #021a0e); border: 2px solid #B8860B; border-radius: 16px; padding: 15px; min-height: 300px; box-shadow: inset 0 0 50px #000; display: flex; flex-direction: column; justify-content: space-between; }
   .bj-hand { text-align: center; }
   .bj-label { color: var(--gold-text); font-size: 12px; font-weight: 800; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
@@ -100,7 +100,7 @@
   .bj-controls { display: flex; gap: 10px; margin-top: 15px; }
   .bj-controls button { flex: 1; padding: 15px; border-radius: 8px; font-weight: 900; font-size: 14px; border: none; cursor: pointer; text-transform: uppercase; }
 
-  /* ====== РУЛЕТКА ====== */
+  /* РУЛЕТКА */
   .roulette-table { background: radial-gradient(circle at center, #4a114a, #1a021a); border: 2px solid #B8860B; border-radius: 16px; padding: 15px; min-height: 300px; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: inset 0 0 50px #000; }
   .roul-bets { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin-top: 20px; }
   .roul-btn { padding: 25px; border-radius: 10px; font-size: 16px; font-weight: 900; border: none; cursor: pointer; color: #fff; text-shadow: 0 2px 4px #000; box-shadow: 0 5px 15px rgba(0,0,0,0.5); transition: 0.1s; }
@@ -109,7 +109,7 @@
   .roul-btn.black { background: linear-gradient(135deg, #333, #000); border: 1px solid #555; }
   .roul-btn.green { background: linear-gradient(135deg, #00e676, #004d40); border: 1px solid #00e676; grid-column: 1/-1; }
 
-  /* ====== КРАШ ====== */
+  /* КРАШ */
   .crash-table { background: radial-gradient(circle at bottom, #1a3b6e, #050a14); border: 2px solid #B8860B; border-radius: 16px; padding: 15px; min-height: 300px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: inset 0 0 50px #000; }
   .crash-mult { font-family: 'Cinzel'; font-size: 56px; font-weight: 900; color: var(--gold-text); text-shadow: 0 0 25px rgba(255,215,0,0.6); margin-bottom: 10px; }
   .crash-mult.crashed { color: var(--lose); text-shadow: 0 0 25px var(--lose); }
@@ -257,7 +257,7 @@
   <div class="msg" id="crash-msg"></div>
 </div>
 
-<!-- ПРОФИЛЬ -->
+<!-- ПРОФИЛЬ (без кнопки сохранить) -->
 <div id="screen-profile" class="screen">
   <div class="profile-card">
     <div style="color:#888; font-size:14px; margin-bottom:10px;">БАЛАНС</div>
@@ -290,7 +290,7 @@
       if(document.getElementById("prof-bal")) document.getElementById("prof-bal").textContent = balance.toLocaleString('ru');
   }
 
-  // АВТОСОХРАНЕНИЕ ПРИ ЛЮБОМ ДЕЙСТВИИ (Сворачивание, закрытие и т.д.)
+  // АВТОСОХРАНЕНИЕ
   function autoSave() {
       tg.sendData(JSON.stringify({action: "sync", balance: balance}));
   }
@@ -307,7 +307,7 @@
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   }
 
-  // --- СЛОТЫ ---
+  // СЛОТЫ
   const SVGS = {
     "crown": `<svg viewBox="0 0 24 24"><path d="M2 20h20v2H2v-2zm1-4l2-10 5 5 4-8 4 8 5-5 2 10H3z"/></svg>`,
     "cup": `<svg viewBox="0 0 24 24"><path d="M18 4H6v4c0 3.3 2.7 6 6 6s6-2.7 6-6V4zm2 0h2v4c0 4.4-3.6 8-8 8S6 12.4 6 8V4h2v4c0 3.3 2.7 6 6 6s6-2.7 6-6V4zM8 20h8v2H8v-2z"/></svg>`,
@@ -399,7 +399,7 @@
     }, 1000);
   }
 
-  // --- БЛЭКДЖЕК ---
+  // БЛЭКДЖЕК
   let bjState = { active: false, bet: 500, player: [], dealer: [] };
   const suits = ["♠", "♥", "♦", "♣"];
   
@@ -449,7 +449,7 @@
       }, 1500);
   }
 
-  // --- РУЛЕТКА ---
+  // РУЛЕТКА
   let roulBet = 500;
   function setRoulBet(amount, btn) {
       roulBet = amount; document.getElementById('roul-bet-display').textContent = amount;
@@ -470,7 +470,7 @@
       }
   }
 
-  // --- КРАШ ---
+  // КРАШ
   let crashActive = false, crashMult = 1.0, crashTimer = null, crashBet = 0, crashAt = 2.0;
   function startCrash(amount) {
       if (balance < amount) return alert("Мало монет!");
