@@ -88,13 +88,13 @@
   else { balance = parseInt(balance); }
   let spins = parseInt(localStorage.getItem('casino_spins')) || 0;
 
-  // НОВОЕ: Ловим ссылку на пополнение из бота
+  // ЛОВИМ ПОПОЛНЕНИЕ ИЗ БОТА
   const urlParams = new URLSearchParams(window.location.search);
   const addAmount = urlParams.get('add');
   if (addAmount) {
       balance += parseInt(addAmount);
       localStorage.setItem('casino_balance', balance);
-      window.history.replaceState({}, document.title, window.location.pathname); // Очищаем ссылку
+      window.history.replaceState({}, document.title, window.location.pathname);
       setTimeout(() => tg.showAlert(`✅ Баланс успешно пополнен на ${addAmount} монет!`), 500);
   }
 
@@ -109,7 +109,6 @@
       document.querySelector('.tab[data-tab="'+t+'"]').classList.add("active");
   }
 
-  // СЛОТЫ, БЛЭКДЖЕК, РУЛЕТКА, КРАШ
   const SLOTS = { "zeus": {"name":"⚡ Зевс", "symbols":["⚡","🏛️","🍇","🏺","👑"], "bg":"linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)"}, "pharaoh": {"name":"🐫 Фараон", "symbols":["🐫","🏺","🐍","☀️","👁️"], "bg":"linear-gradient(135deg,#3e2723,#5d4037,#8d6e63)"}, "dragon": {"name":"🐉 Дракон", "symbols":["🐉","🔥","💎","🏮","🎋"], "bg":"linear-gradient(135deg,#b71c1c,#d32f2f,#f57c00)"}, "classic": {"name":"🎰 Классика", "symbols":["🍒","🍋","🍊","🔔","7️⃣"], "bg":"linear-gradient(135deg,#1b5e20,#2e7d32,#388e3c)"}, "space": {"name":"🌌 Космос", "symbols":["🚀","🌙","⭐","🪐","👽"], "bg":"linear-gradient(135deg,#000428,#004e92,#000428)"}, "dead": {"name":"💀 Мёртвый", "symbols":["💀","🦴","🕷️","🕸️","🩸"], "bg":"linear-gradient(135deg,#1a0000,#330000,#4d0000)"} };
   let currentSlot = null;
   const list = document.getElementById("slot-list");
