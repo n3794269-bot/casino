@@ -43,18 +43,20 @@ h2 { font-size: 22px; font-weight: 800; margin-bottom: 15px; }
 .msg { text-align: center; font-size: 14px; font-weight: 600; min-height: 20px; margin-top: 10px; }
 .msg.win { color: var(--success); } .msg.lose { color: var(--danger); }
 
-/* SLOTS */
+/* ===== СЛОТЫ (ИСПРАВЛЕНО) ===== */
 .theme-switch { display: flex; gap: 8px; margin-bottom: 15px; }
 .theme-switch button { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--panel); background: var(--bg); color: var(--muted); font-weight: 800; cursor: pointer; }
 .theme-switch button.active { background: var(--accent); color: #000; border-color: var(--accent); }
-.slot-machine { background: radial-gradient(circle at center, #1e293b, #0b1120); border-radius: 16px; padding: 10px; border: 2px solid var(--accent); box-shadow: inset 0 0 30px #000, 0 0 20px rgba(56,189,248,0.2); margin-bottom: 15px; position: relative; }
-.reels { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; height: 250px; overflow: hidden; }
-.reel { background: #0f172a; border-radius: 8px; overflow: hidden; position: relative; }
-.track { display: flex; flex-direction: column; width: 100%; transition: transform 1s cubic-bezier(0.1, 0.7, 0.1, 1); }
-.cell { width: 100%; aspect-ratio: 1; display: flex; justify-content: center; align-items: center; font-size: 32px; }
-.cell.win { animation: pulse 0.5s infinite alternate; background: rgba(56,189,248,0.3); }
-@keyframes pulse { to { transform: scale(1.1); } }
-.win-line { position: absolute; top: 50%; left: 0; width: 100%; height: 4px; background: var(--accent); box-shadow: 0 0 15px var(--accent); opacity: 0; transition: opacity 0.3s; transform: translateY(-50%); }
+
+.slot-machine { background: radial-gradient(circle at center, #1e293b, #0b1120); border-radius: 16px; padding: 8px; border: 2px solid var(--accent); box-shadow: inset 0 0 30px #000, 0 0 20px rgba(56,189,248,0.2); margin-bottom: 15px; position: relative; }
+
+.reels { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; height: 240px; /* 3 ряда по 80px */ }
+.reel { background: #0f172a; border-radius: 8px; overflow: hidden; position: relative; height: 100%; border: 1px solid rgba(255,255,255,0.05); }
+.track { position: absolute; top: 0; left: 0; width: 100%; display: flex; flex-direction: column; }
+.cell { width: 100%; height: 80px; display: flex; justify-content: center; align-items: center; font-size: 38px; flex-shrink: 0; text-shadow: 0 0 10px rgba(255,255,255,0.2); }
+.cell.win { animation: pulse 0.5s infinite alternate; background: rgba(56,189,248,0.2); }
+@keyframes pulse { to { transform: scale(1.1); filter: brightness(1.5); } }
+.win-line { position: absolute; top: 50%; left: 8px; right: 8px; height: 2px; background: var(--accent); box-shadow: 0 0 15px var(--accent); opacity: 0; transition: opacity 0.3s; transform: translateY(-50%); pointer-events: none; }
 .win-line.active { opacity: 1; }
 
 /* MINES */
@@ -181,7 +183,7 @@ h2 { font-size: 22px; font-weight: 800; margin-bottom: 15px; }
   <div class="panel" style="text-align:center;">
     <div style="color:var(--muted); font-size:14px; font-weight:800;">БАЛАНС</div>
     <div class="profile-bal" id="prof-bal">0.00</div>
-    <div style="color:var(--muted); font-size:12px;">Баланс сохраняется автоматически</div>
+    <div style="color:var(--muted); font-size:12px;">Синхронизация с ботом: Авто</div>
   </div>
 </div>
 
@@ -207,8 +209,9 @@ let storageReady = false;
 // --- CLOUD SYNC (АВТОСОХРАНЕНИЕ) ---
 function saveCloud() {
     if (!storageReady) return;
+    // Сохраняем в облако Telegram
     tg.CloudStorage.setItem('balance', balance.toString(), ()=>{});
-    // Дополнительно отправляем боту, чтобы он обновил базу
+    // Отправляем боту для обновления базы
     tg.sendData(JSON.stringify({action: "sync", balance: Math.floor(balance)}));
 }
 
@@ -251,13 +254,14 @@ function openGame(game) {
 
 // --- SLOTS GAME ---
 const THEMES = {
-    zeus: { s: ["⚡","🏛️","🍇","🏺","👑"], w: "⚡", sc: "🏛️" },
-    pharaoh: { s: ["🗿","☥","🪲","👁","🐫"], w: "🦁", sc: "🔺" }
+    zeus: { s: ["⚡","🏛️","🍇","🏺","👑"], w: "⚡" },
+    pharaoh: { s: ["🗿","☥","🪲","👁","🐫"], w: "🦁" }
 };
 let currentTheme = 'zeus';
-const LINES = [[1,1,1,1,1],[0,0,0,0,0],[2,2,2,2,2]]; // 3 линии для простоты
+let slotSpinning = false;
 
 function setTheme(t, btn) {
+    if(slotSpinning) return;
     currentTheme = t;
     document.querySelectorAll('#theme-switch button').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
@@ -267,79 +271,100 @@ function setTheme(t, btn) {
 function initSlots() {
     const reelsContainer = document.getElementById('reels');
     reelsContainer.innerHTML = '';
+    const theme = THEMES[currentTheme];
     for(let i=0; i<5; i++) {
         const reel = document.createElement('div');
         reel.className = 'reel';
-        reel.innerHTML = `<div class="track" id="track-${i}"></div>`;
-        reelsContainer.appendChild(reel);
-    }
-    // Заполняем начальными символами
-    const theme = THEMES[currentTheme];
-    for(let i=0; i<5; i++) {
-        let html = '';
+        let html = '<div class="track" style="transform: translateY(0)">';
+        // 3 символа изначально
         for(let j=0; j<3; j++) {
             let sym = theme.s[Math.floor(Math.random() * theme.s.length)];
             html += `<div class="cell">${sym}</div>`;
         }
-        document.getElementById('track-' + i).innerHTML = html;
+        html += '</div>';
+        reel.innerHTML = html;
+        reelsContainer.appendChild(reel);
     }
+    document.getElementById('slot-msg').textContent = 'Выбери ставку и крути';
+    document.getElementById('win-line').classList.remove('active');
+    document.querySelectorAll('.cell').forEach(c => c.classList.remove('win'));
 }
 
 function spinSlots() {
+    if(slotSpinning) return;
     const bet = BETS[betIndex];
     if (bet > balance) return alert('Мало средств!');
-    balance -= bet; updateUI();
-
+    
+    balance -= bet; 
+    updateUI();
+    slotSpinning = true;
+    document.getElementById('spin-btn').disabled = true;
     document.getElementById('slot-msg').textContent = 'Крутим...';
     document.getElementById('win-line').classList.remove('active');
     document.querySelectorAll('.cell').forEach(c => c.classList.remove('win'));
 
     const theme = THEMES[currentTheme];
-    const isWin = Math.random() < 0.35; // Шанс выигрыша
+    // Шанс выигрыша 35% (первые 8 спинов можно сделать 85% для заманухи, но пока 35%)
+    const isWin = Math.random() < 0.35; 
     let winAmount = 0;
+    
+    // Выбираем символ, который выпадет в центр (для выигрыша)
+    const winSym = theme.s[Math.floor(Math.random() * 3)]; 
 
-    for(let i=0; i<5; i++) {
-        const track = document.getElementById('track-' + i);
+    const tracks = document.querySelectorAll('.track');
+    
+    tracks.forEach((track, i) => {
+        // Генерируем 17 ячеек (15 для прокрутки + 2 видимых в конце)
         let html = '';
-        let finalSym = isWin ? theme.s[0] : theme.s[Math.floor(Math.random() * theme.s.length)];
-        
-        // Добавляем много символов для эффекта крутки
-        for(let j=0; j<15; j++) {
-            html += `<div class="cell">${theme.s[Math.floor(Math.random() * theme.s.length)]}</div>`;
+        for(let j=0; j<17; j++) {
+            if (isWin && j === 15 && i === 2) {
+                // Выигрышный символ ровно в центре третьего барабана
+                html += `<div class="cell">${winSym}</div>`;
+            } else {
+                html += `<div class="cell">${theme.s[Math.floor(Math.random() * theme.s.length)]}</div>`;
+            }
         }
-        // Финальный символ (по центру)
-        html += `<div class="cell">${finalSym}</div>`;
-        html += `<div class="cell">${theme.s[Math.floor(Math.random() * theme.s.length)]}</div>`;
-
         track.innerHTML = html;
+        
+        // Сброс анимации
         track.style.transition = 'none';
         track.style.transform = 'translateY(0)';
         
+        // Принудительный рефлоу
+        void track.offsetWidth;
+
+        // Анимация прокрутки: сдвигаем так, чтобы 15-я ячейка (индекс 15) была первой видимой
+        // Высота ячейки 80px. 15 * 80 = 1200px.
         setTimeout(() => {
-            track.style.transition = 'transform 0.8s cubic-bezier(0.1, 0.7, 0.1, 1)';
-            // Прокручиваем так, чтобы центральный (15-й) элемент оказался посередине
-            // Высота ячейки ~ 50px (250 / 5). Центр = 1 ячейка.
-            track.style.transform = 'translateY(-750px)'; // 15 * 50
+            track.style.transition = 'transform 1s cubic-bezier(0.1, 0.7, 0.1, 1)';
+            track.style.transform = `translateY(-1200px)`;
         }, i * 100);
-    }
+    });
 
     setTimeout(() => {
+        slotSpinning = false;
+        document.getElementById('spin-btn').disabled = false;
+        
         if(isWin) {
-            winAmount = bet * 5; // x5 выигрыш
+            winAmount = bet * 5;
             balance += winAmount;
             updateUI();
+            document.getElementById('slot-msg').className = 'msg win';
             document.getElementById('slot-msg').textContent = `ВЫИГРЫШ: +${winAmount.toFixed(2)}!`;
             document.getElementById('win-line').classList.add('active');
-            document.querySelectorAll('.cell').forEach(c => {
-                // Подсвечиваем центральные ячейки
-                if(c.parentElement.id === 'track-0' || c.parentElement.id === 'track-1' || c.parentElement.id === 'track-2') {
-                    // Логика подсветки
-                }
+            
+            // Подсветка центрального ряда
+            tracks.forEach(track => {
+                const cells = track.querySelectorAll('.cell');
+                if(cells[15]) cells[15].classList.add('win');
+                if(cells[14]) cells[14].classList.add('win');
+                if(cells[16]) cells[16].classList.add('win');
             });
         } else {
+            document.getElementById('slot-msg').className = 'msg lose';
             document.getElementById('slot-msg').textContent = `Проигрыш -${bet.toFixed(2)}`;
         }
-    }, 1200);
+    }, 1600);
 }
 
 // --- MINES GAME ---
@@ -365,6 +390,7 @@ function resetMines() {
     document.getElementById('mines-btn').className = 'btn';
     document.getElementById('mines-btn').textContent = 'Играть';
     document.getElementById('mines-msg').textContent = '';
+    document.getElementById('mines-msg').className = 'msg';
 }
 
 function minesAction() {
@@ -386,6 +412,7 @@ function minesAction() {
         revealMines();
         document.getElementById('mines-btn').className = 'btn';
         document.getElementById('mines-btn').textContent = 'Играть снова';
+        document.getElementById('mines-msg').className = 'msg win';
         document.getElementById('mines-msg').textContent = `Забрали ${payout.toFixed(2)} (x${mult.toFixed(1)})`;
     }
 }
@@ -399,10 +426,13 @@ function clickMine(i) {
         minesActive = false; revealMines();
         document.getElementById('mines-btn').className = 'btn';
         document.getElementById('mines-btn').textContent = 'Играть снова';
+        document.getElementById('mines-msg').className = 'msg lose';
         document.getElementById('mines-msg').textContent = 'Взрыв!';
     } else {
         cell.classList.add('diamond', 'opened'); cell.textContent = '💎';
         minesOpened++;
+        document.getElementById('mines-msg').className = 'msg';
+        document.getElementById('mines-msg').textContent = `Множитель: x${(1 + minesOpened * 0.3).toFixed(1)}`;
     }
 }
 
@@ -456,9 +486,12 @@ let crashActive = false, crashMult = 1.00, crashAt = 0, crashTimer = null, crash
 function resetCrash() {
     crashActive = false; clearInterval(crashTimer);
     document.getElementById('crash-mult').textContent = '1.00x';
+    document.getElementById('crash-mult').style.color = 'var(--accent)';
     document.getElementById('crash-btn').textContent = 'Начать';
     document.getElementById('crash-btn').className = 'btn btn-green';
     drawGraph(0, 1);
+    document.getElementById('crash-msg').className = 'msg';
+    document.getElementById('crash-msg').textContent = '';
 }
 
 function crashAction() {
@@ -482,7 +515,7 @@ function crashAction() {
                 document.getElementById('crash-btn').textContent = 'Начать';
                 document.getElementById('crash-btn').className = 'btn btn-green';
                 document.getElementById('crash-msg').className = 'msg lose';
-                document.getElementById('crash-msg').textContent = `Краш!`;
+                document.getElementById('crash-msg').textContent = `Краш на ${crashAt.toFixed(2)}x!`;
             } else {
                 document.getElementById('crash-mult').textContent = crashMult.toFixed(2) + 'x';
                 drawGraph(time, crashMult);
@@ -494,7 +527,7 @@ function crashAction() {
         document.getElementById('crash-btn').textContent = 'Начать';
         document.getElementById('crash-btn').className = 'btn btn-green';
         document.getElementById('crash-msg').className = 'msg win';
-        document.getElementById('crash-msg').textContent = `Забрали +${payout.toFixed(2)}`;
+        document.getElementById('crash-msg').textContent = `Забрали +${payout.toFixed(2)} на ${crashMult.toFixed(2)}x`;
     }
 }
 
