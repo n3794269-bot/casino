@@ -8,114 +8,117 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #0b1120;
-  --panel: #151e32;
-  --panel-hover: #1e293b;
-  --text: #f8fafc;
-  --muted: #64748b;
-  --accent: #38bdf8;
-  --accent-glow: 0 0 15px rgba(56, 189, 248, 0.5);
-  --success: #10b981;
-  --danger: #ef4444;
-  --gold: #fbbf24;
+  --bg: #0b1120; --panel: #151e32; --text: #f8fafc; --muted: #64748b; --accent: #38bdf8;
+  --success: #10b981; --danger: #ef4444; --gold: #fbbf24;
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
 body { background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 70px; overflow-x: hidden; }
 
-/* HEADER */
 .header { position: sticky; top: 0; z-index: 50; padding: 15px 20px; background: rgba(11, 17, 32, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; }
-.logo { font-size: 20px; font-weight: 900; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
-.logo-icon { color: var(--accent); text-shadow: var(--accent-glow); }
+.logo { font-size: 20px; font-weight: 900; letter-spacing: 1px; color: var(--accent); text-shadow: 0 0 10px rgba(56,189,248,0.5); }
 .balance-box { display: flex; align-items: center; gap: 6px; background: var(--panel); padding: 8px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); font-weight: 800; font-size: 15px; }
-.balance-box span:first-child { color: var(--gold); }
 
-/* LOBBY */
 .screen { display: none; padding: 20px; max-width: 500px; margin: 0 auto; animation: fadeIn 0.3s ease; }
 .screen.active { display: block; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 h2 { font-size: 22px; font-weight: 800; margin-bottom: 15px; }
 .games-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 .game-card { background: var(--panel); border-radius: 16px; padding: 20px; cursor: pointer; text-align: center; transition: 0.2s; border: 1px solid rgba(255,255,255,0.02); }
-.game-card:active { transform: scale(0.97); background: var(--panel-hover); }
+.game-card:active { transform: scale(0.97); background: #1e293b; }
 .game-card h3 { font-size: 16px; margin-bottom: 5px; }
 .game-card p { font-size: 11px; color: var(--muted); }
 .game-icon { font-size: 32px; margin-bottom: 10px; }
 
-/* COMMON */
-.btn { width: 100%; padding: 16px; border-radius: 12px; border: none; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.2s; color: #000; background: var(--accent); box-shadow: var(--accent-glow); margin-bottom: 10px; }
+.btn { width: 100%; padding: 16px; border-radius: 12px; border: none; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.2s; color: #000; background: var(--accent); box-shadow: 0 0 15px rgba(56,189,248,0.4); margin-bottom: 10px; }
 .btn:active { transform: scale(0.98); }
 .btn:disabled { opacity: 0.5; box-shadow: none; cursor: not-allowed; }
-.btn-green { background: var(--success); box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); color: #fff; }
-.btn-red { background: var(--danger); box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); color: #fff; }
-.back-btn { background: none; border: none; color: var(--muted); font-size: 14px; font-weight: 600; cursor: pointer; margin-bottom: 15px; display: flex; align-items: center; gap: 5px; }
+.btn-green { background: var(--success); box-shadow: 0 0 15px rgba(16,185,129,0.4); color: #fff; }
+.btn-red { background: var(--danger); box-shadow: 0 0 15px rgba(239,68,68,0.4); color: #fff; }
+.back-btn { background: none; border: none; color: var(--muted); font-size: 14px; font-weight: 600; cursor: pointer; margin-bottom: 15px; }
 .panel { background: var(--panel); border-radius: 16px; padding: 15px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05); }
+
 .bet-controls { display: flex; align-items: center; justify-content: space-between; background: var(--bg); border-radius: 10px; padding: 5px; margin-bottom: 15px; }
 .bet-controls button { width: 40px; height: 40px; border-radius: 8px; border: none; background: var(--panel); color: #fff; font-size: 20px; cursor: pointer; }
 .bet-controls input { width: 80px; background: transparent; border: none; color: #fff; font-size: 18px; font-weight: 800; text-align: center; }
 .msg { text-align: center; font-size: 14px; font-weight: 600; min-height: 20px; margin-top: 10px; }
 .msg.win { color: var(--success); } .msg.lose { color: var(--danger); }
 
+/* SLOTS */
+.theme-switch { display: flex; gap: 8px; margin-bottom: 15px; }
+.theme-switch button { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--panel); background: var(--bg); color: var(--muted); font-weight: 800; cursor: pointer; }
+.theme-switch button.active { background: var(--accent); color: #000; border-color: var(--accent); }
+.slot-machine { background: radial-gradient(circle at center, #1e293b, #0b1120); border-radius: 16px; padding: 10px; border: 2px solid var(--accent); box-shadow: inset 0 0 30px #000, 0 0 20px rgba(56,189,248,0.2); margin-bottom: 15px; position: relative; }
+.reels { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; height: 250px; overflow: hidden; }
+.reel { background: #0f172a; border-radius: 8px; overflow: hidden; position: relative; }
+.track { display: flex; flex-direction: column; width: 100%; transition: transform 1s cubic-bezier(0.1, 0.7, 0.1, 1); }
+.cell { width: 100%; aspect-ratio: 1; display: flex; justify-content: center; align-items: center; font-size: 32px; }
+.cell.win { animation: pulse 0.5s infinite alternate; background: rgba(56,189,248,0.3); }
+@keyframes pulse { to { transform: scale(1.1); } }
+.win-line { position: absolute; top: 50%; left: 0; width: 100%; height: 4px; background: var(--accent); box-shadow: 0 0 15px var(--accent); opacity: 0; transition: opacity 0.3s; transform: translateY(-50%); }
+.win-line.active { opacity: 1; }
+
 /* MINES */
 .mines-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 15px; }
 .mine-cell { aspect-ratio: 1; background: var(--panel); border-radius: 10px; border: none; cursor: pointer; font-size: 24px; display: flex; justify-content: center; align-items: center; transition: 0.1s; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
 .mine-cell:active { transform: scale(0.95); }
-.mine-cell.opened { background: var(--panel-hover); }
-.mine-cell.diamond { background: rgba(16, 185, 129, 0.2); border: 1px solid var(--success); }
-.mine-cell.bomb { background: rgba(239, 68, 68, 0.2); border: 1px solid var(--danger); }
+.mine-cell.opened { background: #1e293b; }
+.mine-cell.diamond { background: rgba(16,185,129,0.2); border: 1px solid var(--success); }
+.mine-cell.bomb { background: rgba(239,68,68,0.2); border: 1px solid var(--danger); }
 
 /* DICE */
-.dice-result { font-size: 60px; font-weight: 900; text-align: center; margin: 20px 0; color: var(--accent); text-shadow: var(--accent-glow); }
-.slider-container { position: relative; margin: 20px 0; }
+.dice-result { font-size: 60px; font-weight: 900; text-align: center; margin: 20px 0; color: var(--accent); }
+.slider-container { margin: 20px 0; }
 .slider-container input { width: 100%; accent-color: var(--accent); }
-.chance-info { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: var(--muted); margin-top: 10px; }
 
 /* CRASH */
-.crash-canvas { width: 100%; height: 220px; background: var(--panel); border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05); display: block; }
-.multiplier { font-size: 56px; font-weight: 900; text-align: center; margin: 10px 0; color: var(--accent); text-shadow: var(--accent-glow); }
+.crash-canvas { width: 100%; height: 200px; background: var(--panel); border-radius: 12px; display: block; margin-bottom: 15px; }
+.multiplier { font-size: 56px; font-weight: 900; text-align: center; color: var(--accent); text-shadow: 0 0 15px rgba(56,189,248,0.5); margin-bottom: 10px; }
 
 /* NAV */
-.nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(11, 17, 32, 0.95); backdrop-filter: blur(10px); border-top: 1px solid rgba(255,255,255,0.05); display: flex; padding: 10px 0 max(10px, env(safe-area-inset-bottom)); z-index: 100; }
-.nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; color: var(--muted); cursor: pointer; }
+.nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(11,17,32,0.95); border-top: 1px solid rgba(255,255,255,0.05); display: flex; padding: 10px 0 max(10px, env(safe-area-inset-bottom)); z-index: 100; }
+.nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; font-size: 10px; font-weight: 700; color: var(--muted); cursor: pointer; }
 .nav-item.active { color: var(--accent); }
-.nav-icon { font-size: 20px; }
-
-/* PROFILE */
-.profile-card { text-align: center; padding: 30px 20px; }
-.profile-bal { font-size: 48px; font-weight: 900; color: var(--gold); margin: 10px 0; }
+.nav-icon { font-size: 20px; margin-bottom: 4px; }
+.profile-bal { font-size: 48px; font-weight: 900; color: var(--gold); text-align: center; margin: 20px 0; }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <div class="logo"><span class="logo-icon">♦</span> ROYAL</div>
+  <div class="logo">♦ ROYAL</div>
   <div class="balance-box"><span>🪙</span> <span id="bal">0.00</span></div>
 </div>
 
 <!-- LOBBY -->
 <div id="s-lobby" class="screen active">
-  <h2>Популярные игры</h2>
+  <h2>Игры</h2>
   <div class="games-grid">
-    <div class="game-card" onclick="openGame('mines')">
-      <div class="game-icon">💣</div>
-      <h3>Mines</h3>
-      <p>Мин 3 · Мин 5 · Мин 10</p>
-    </div>
-    <div class="game-card" onclick="openGame('dice')">
-      <div class="game-icon">🎲</div>
-      <h3>Dice</h3>
-      <p>Больше · Меньше</p>
-    </div>
-    <div class="game-card" onclick="openGame('crash')">
-      <div class="game-icon">🚀</div>
-      <h3>Crash</h3>
-      <p>Забери до краша</p>
-    </div>
-    <div class="game-card" onclick="openGame('profile')">
-      <div class="game-icon">👤</div>
-      <h3>Профиль</h3>
-      <p>Баланс и вывод</p>
-    </div>
+    <div class="game-card" onclick="openGame('slots')"><div class="game-icon">🎰</div><h3>Слоты</h3><p>Зевс, Фараон</p></div>
+    <div class="game-card" onclick="openGame('mines')"><div class="game-icon">💣</div><h3>Mines</h3><p>Мин 3, 5</p></div>
+    <div class="game-card" onclick="openGame('dice')"><div class="game-icon">🎲</div><h3>Dice</h3><p>Больше/Меньше</p></div>
+    <div class="game-card" onclick="openGame('crash')"><div class="game-icon">🚀</div><h3>Crash</h3><p>Забери до краша</p></div>
+    <div class="game-card" onclick="openGame('profile')"><div class="game-icon">👤</div><h3>Профиль</h3><p>Баланс</p></div>
   </div>
+</div>
+
+<!-- SLOTS -->
+<div id="s-slots" class="screen">
+  <button class="back-btn" onclick="openGame('lobby')">← Назад</button>
+  <div class="theme-switch" id="theme-switch">
+    <button onclick="setTheme('zeus', this)" class="active">⚡ Зевс</button>
+    <button onclick="setTheme('pharaoh', this)">🗿 Фараон</button>
+  </div>
+  <div class="slot-machine">
+    <div class="reels" id="reels"></div>
+    <div class="win-line" id="win-line"></div>
+  </div>
+  <div class="msg" id="slot-msg">Выбери ставку и крути</div>
+  <div class="bet-controls">
+    <button onclick="changeBet(-1)">−</button>
+    <input type="text" id="slot-bet" value="1.00" readonly>
+    <button onclick="changeBet(1)">+</button>
+  </div>
+  <button class="btn" id="spin-btn" onclick="spinSlots()">Крутить</button>
 </div>
 
 <!-- MINES -->
@@ -127,13 +130,9 @@ h2 { font-size: 22px; font-weight: 800; margin-bottom: 15px; }
       <input type="text" id="mines-bet" value="1.00" readonly>
       <button onclick="changeBet(1)">+</button>
     </div>
-    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-       <span style="font-size:14px; color:var(--muted);">Кол-во мин:</span>
-       <span id="mines-count" style="font-weight:800;">3</span>
-    </div>
     <div class="mines-grid" id="mines-grid"></div>
     <button class="btn" id="mines-btn" onclick="minesAction()">Играть</button>
-    <div class="msg" id="mines-msg">Выберите ставку и начните</div>
+    <div class="msg" id="mines-msg"></div>
   </div>
 </div>
 
@@ -149,7 +148,7 @@ h2 { font-size: 22px; font-weight: 800; margin-bottom: 15px; }
     <div class="dice-result" id="dice-result">50.00</div>
     <div class="slider-container">
       <input type="range" id="dice-slider" min="2" max="98" value="50" oninput="updateDiceInfo()">
-      <div class="chance-info">
+      <div style="display:flex; justify-content:space-between; margin-top:10px; font-weight:800;">
         <span id="dice-win-chance">Шанс: 50%</span>
         <span id="dice-mult">x1.98</span>
       </div>
@@ -163,9 +162,9 @@ h2 { font-size: 22px; font-weight: 800; margin-bottom: 15px; }
 <!-- CRASH -->
 <div id="s-crash" class="screen">
   <button class="back-btn" onclick="openGame('lobby')">← Назад</button>
-  <div class="panel" style="padding: 0; overflow: hidden; background: transparent; border: none;">
+  <div class="panel">
     <div class="multiplier" id="crash-mult">1.00x</div>
-    <canvas id="crash-canvas" class="crash-canvas" width="600" height="400"></canvas>
+    <canvas id="crash-canvas" class="crash-canvas" width="600" height="300"></canvas>
     <div class="bet-controls">
       <button onclick="changeBet(-1)">−</button>
       <input type="text" id="crash-bet" value="1.00" readonly>
@@ -179,19 +178,18 @@ h2 { font-size: 22px; font-weight: 800; margin-bottom: 15px; }
 <!-- PROFILE -->
 <div id="s-profile" class="screen">
   <button class="back-btn" onclick="openGame('lobby')">← Назад</button>
-  <div class="panel profile-card">
-    <div style="color:var(--muted); font-size:14px; font-weight:800; letter-spacing:1px;">БАЛАНС</div>
+  <div class="panel" style="text-align:center;">
+    <div style="color:var(--muted); font-size:14px; font-weight:800;">БАЛАНС</div>
     <div class="profile-bal" id="prof-bal">0.00</div>
-    <button class="btn" style="margin-top:20px;" onclick="saveAndExit()">💾 СОХРАНИТЬ И ВЫЙТИ</button>
+    <div style="color:var(--muted); font-size:12px;">Баланс сохраняется автоматически</div>
   </div>
 </div>
 
 <!-- NAV -->
 <div class="nav">
   <div class="nav-item active" onclick="openGame('lobby')"><span class="nav-icon">🏠</span>Лобби</div>
-  <div class="nav-item" onclick="openGame('mines')"><span class="nav-icon">💣</span>Mines</div>
-  <div class="nav-item" onclick="openGame('dice')"><span class="nav-icon">🎲</span>Dice</div>
-  <div class="nav-item" onclick="openGame('crash')"><span class="nav-icon">🚀</span>Crash</div>
+  <div class="nav-item" onclick="openGame('slots')"><span class="nav-icon">🎰</span>Слоты</div>
+  <div class="nav-item" onclick="openGame('crash')"><span class="nav-icon">🚀</span>Краш</div>
   <div class="nav-item" onclick="openGame('profile')"><span class="nav-icon">👤</span>Профиль</div>
 </div>
 
@@ -202,17 +200,19 @@ tg.ready(); tg.expand();
 
 // --- STATE ---
 let balance = 1000;
-let currentScreen = 'lobby';
 let betIndex = 2;
 const BETS = [0.1, 0.5, 1, 2, 5, 10, 25, 50];
 let storageReady = false;
 
-// --- CLOUD SYNC ---
+// --- CLOUD SYNC (АВТОСОХРАНЕНИЕ) ---
 function saveCloud() {
     if (!storageReady) return;
     tg.CloudStorage.setItem('balance', balance.toString(), ()=>{});
+    // Дополнительно отправляем боту, чтобы он обновил базу
+    tg.sendData(JSON.stringify({action: "sync", balance: Math.floor(balance)}));
 }
 
+// Загрузка баланса при старте (исправлено от NaN)
 tg.CloudStorage.getItem('balance', (err, val) => {
     let parsed = NaN;
     if (!err && val) parsed = parseFloat(val);
@@ -228,9 +228,9 @@ tg.CloudStorage.getItem('balance', (err, val) => {
 function updateUI() {
     document.getElementById('bal').textContent = balance.toFixed(2);
     if(document.getElementById('prof-bal')) document.getElementById('prof-bal').textContent = balance.toFixed(2);
-    document.getElementById('mines-bet').value = BETS[betIndex].toFixed(2);
-    document.getElementById('dice-bet').value = BETS[betIndex].toFixed(2);
-    document.getElementById('crash-bet').value = BETS[betIndex].toFixed(2);
+    ['slot-bet', 'mines-bet', 'dice-bet', 'crash-bet'].forEach(id => {
+        if(document.getElementById(id)) document.getElementById(id).value = BETS[betIndex].toFixed(2);
+    });
     saveCloud();
 }
 
@@ -239,19 +239,107 @@ function changeBet(dir) {
     updateUI();
 }
 
-function saveAndExit() {
-    tg.sendData(JSON.stringify({action: "sync", balance: Math.floor(balance)}));
-    tg.close();
-}
-
 function openGame(game) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById('s-' + game).classList.add('active');
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    currentScreen = game;
     updateUI();
+    if (game === 'slots') initSlots();
     if (game === 'mines') resetMines();
     if (game === 'crash') resetCrash();
+}
+
+// --- SLOTS GAME ---
+const THEMES = {
+    zeus: { s: ["⚡","🏛️","🍇","🏺","👑"], w: "⚡", sc: "🏛️" },
+    pharaoh: { s: ["🗿","☥","🪲","👁","🐫"], w: "🦁", sc: "🔺" }
+};
+let currentTheme = 'zeus';
+const LINES = [[1,1,1,1,1],[0,0,0,0,0],[2,2,2,2,2]]; // 3 линии для простоты
+
+function setTheme(t, btn) {
+    currentTheme = t;
+    document.querySelectorAll('#theme-switch button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    initSlots();
+}
+
+function initSlots() {
+    const reelsContainer = document.getElementById('reels');
+    reelsContainer.innerHTML = '';
+    for(let i=0; i<5; i++) {
+        const reel = document.createElement('div');
+        reel.className = 'reel';
+        reel.innerHTML = `<div class="track" id="track-${i}"></div>`;
+        reelsContainer.appendChild(reel);
+    }
+    // Заполняем начальными символами
+    const theme = THEMES[currentTheme];
+    for(let i=0; i<5; i++) {
+        let html = '';
+        for(let j=0; j<3; j++) {
+            let sym = theme.s[Math.floor(Math.random() * theme.s.length)];
+            html += `<div class="cell">${sym}</div>`;
+        }
+        document.getElementById('track-' + i).innerHTML = html;
+    }
+}
+
+function spinSlots() {
+    const bet = BETS[betIndex];
+    if (bet > balance) return alert('Мало средств!');
+    balance -= bet; updateUI();
+
+    document.getElementById('slot-msg').textContent = 'Крутим...';
+    document.getElementById('win-line').classList.remove('active');
+    document.querySelectorAll('.cell').forEach(c => c.classList.remove('win'));
+
+    const theme = THEMES[currentTheme];
+    const isWin = Math.random() < 0.35; // Шанс выигрыша
+    let winAmount = 0;
+
+    for(let i=0; i<5; i++) {
+        const track = document.getElementById('track-' + i);
+        let html = '';
+        let finalSym = isWin ? theme.s[0] : theme.s[Math.floor(Math.random() * theme.s.length)];
+        
+        // Добавляем много символов для эффекта крутки
+        for(let j=0; j<15; j++) {
+            html += `<div class="cell">${theme.s[Math.floor(Math.random() * theme.s.length)]}</div>`;
+        }
+        // Финальный символ (по центру)
+        html += `<div class="cell">${finalSym}</div>`;
+        html += `<div class="cell">${theme.s[Math.floor(Math.random() * theme.s.length)]}</div>`;
+
+        track.innerHTML = html;
+        track.style.transition = 'none';
+        track.style.transform = 'translateY(0)';
+        
+        setTimeout(() => {
+            track.style.transition = 'transform 0.8s cubic-bezier(0.1, 0.7, 0.1, 1)';
+            // Прокручиваем так, чтобы центральный (15-й) элемент оказался посередине
+            // Высота ячейки ~ 50px (250 / 5). Центр = 1 ячейка.
+            track.style.transform = 'translateY(-750px)'; // 15 * 50
+        }, i * 100);
+    }
+
+    setTimeout(() => {
+        if(isWin) {
+            winAmount = bet * 5; // x5 выигрыш
+            balance += winAmount;
+            updateUI();
+            document.getElementById('slot-msg').textContent = `ВЫИГРЫШ: +${winAmount.toFixed(2)}!`;
+            document.getElementById('win-line').classList.add('active');
+            document.querySelectorAll('.cell').forEach(c => {
+                // Подсвечиваем центральные ячейки
+                if(c.parentElement.id === 'track-0' || c.parentElement.id === 'track-1' || c.parentElement.id === 'track-2') {
+                    // Логика подсветки
+                }
+            });
+        } else {
+            document.getElementById('slot-msg').textContent = `Проигрыш -${bet.toFixed(2)}`;
+        }
+    }, 1200);
 }
 
 // --- MINES GAME ---
@@ -260,10 +348,6 @@ let minesBombs = new Set();
 let minesOpened = 0;
 const minesTotal = 25;
 const minesCount = 3;
-const minesMult = (opened) => {
-    let comb = (n, k) => { let r = 1; for(let i=1; i<=k; i++) r = r * (n - k + i) / i; return r; };
-    return (0.99 * comb(minesTotal, opened)) / comb(minesTotal - minesCount, opened);
-};
 
 function resetMines() {
     minesActive = false;
@@ -280,36 +364,29 @@ function resetMines() {
     }
     document.getElementById('mines-btn').className = 'btn';
     document.getElementById('mines-btn').textContent = 'Играть';
-    document.getElementById('mines-msg').textContent = 'Выберите ставку и начните';
-    document.getElementById('mines-msg').className = 'msg';
+    document.getElementById('mines-msg').textContent = '';
 }
 
 function minesAction() {
     if (!minesActive) {
         let bet = BETS[betIndex];
         if (bet > balance) return alert('Мало средств!');
-        balance -= bet;
-        updateUI();
+        balance -= bet; updateUI();
         minesActive = true;
-        minesOpened = 0;
         while(minesBombs.size < minesCount) minesBombs.add(Math.floor(Math.random() * minesTotal));
         document.querySelectorAll('.mine-cell').forEach(c => { c.className = 'mine-cell'; c.textContent = ''; });
         document.getElementById('mines-btn').className = 'btn btn-green';
         document.getElementById('mines-btn').textContent = 'Забрать';
-        document.getElementById('mines-msg').textContent = 'Открывайте клетки';
     } else {
-        // Cashout
-        if (minesOpened === 0) return alert('Откройте хотя бы одну клетку!');
-        let mult = minesMult(minesOpened);
+        if (minesOpened === 0) return alert('Откройте хотя бы одну!');
+        let mult = 1 + (minesOpened * 0.3);
         let payout = BETS[betIndex] * mult;
-        balance += payout;
-        updateUI();
+        balance += payout; updateUI();
         minesActive = false;
         revealMines();
         document.getElementById('mines-btn').className = 'btn';
         document.getElementById('mines-btn').textContent = 'Играть снова';
-        document.getElementById('mines-msg').className = 'msg win';
-        document.getElementById('mines-msg').textContent = `Забрали ${payout.toFixed(2)} (x${mult.toFixed(2)})`;
+        document.getElementById('mines-msg').textContent = `Забрали ${payout.toFixed(2)} (x${mult.toFixed(1)})`;
     }
 }
 
@@ -317,25 +394,15 @@ function clickMine(i) {
     if (!minesActive) return;
     let cell = document.getElementById('mc-' + i);
     if (cell.classList.contains('opened')) return;
-    
     if (minesBombs.has(i)) {
-        // Boom
-        cell.classList.add('bomb', 'opened');
-        cell.textContent = '💣';
-        minesActive = false;
-        revealMines();
+        cell.classList.add('bomb', 'opened'); cell.textContent = '💣';
+        minesActive = false; revealMines();
         document.getElementById('mines-btn').className = 'btn';
         document.getElementById('mines-btn').textContent = 'Играть снова';
-        document.getElementById('mines-msg').className = 'msg lose';
-        document.getElementById('mines-msg').textContent = `Взрыв! Потеряно ${BETS[betIndex].toFixed(2)}`;
+        document.getElementById('mines-msg').textContent = 'Взрыв!';
     } else {
-        // Safe
-        cell.classList.add('diamond', 'opened');
-        cell.textContent = '💎';
+        cell.classList.add('diamond', 'opened'); cell.textContent = '💎';
         minesOpened++;
-        let mult = minesMult(minesOpened);
-        document.getElementById('mines-btn').textContent = `Забрать ${(BETS[betIndex] * mult).toFixed(2)}`;
-        if (minesOpened === minesTotal - minesCount) minesAction(); // Auto cashout if all safe opened
     }
 }
 
@@ -343,8 +410,7 @@ function revealMines() {
     for (let i = 0; i < minesTotal; i++) {
         if (minesBombs.has(i)) {
             let c = document.getElementById('mc-' + i);
-            c.classList.add('bomb', 'opened');
-            c.textContent = '💣';
+            c.classList.add('bomb', 'opened'); c.textContent = '💣';
         }
     }
 }
@@ -352,12 +418,9 @@ function revealMines() {
 // --- DICE GAME ---
 function updateDiceInfo() {
     let val = document.getElementById('dice-slider').value;
-    let chance = val;
-    let mult = (99 / chance).toFixed(2);
-    document.getElementById('dice-win-chance').textContent = `Шанс: ${chance}%`;
-    document.getElementById('dice-mult').textContent = `x${mult}`;
+    document.getElementById('dice-win-chance').textContent = `Шанс: ${val}%`;
+    document.getElementById('dice-mult').textContent = `x${(99/val).toFixed(2)}`;
 }
-updateDiceInfo();
 
 function rollDice(isHigher) {
     let bet = BETS[betIndex];
@@ -367,23 +430,18 @@ function rollDice(isHigher) {
     let target = parseFloat(document.getElementById('dice-slider').value);
     let roll = Math.random() * 100;
     
-    // Анимация кручения
     let count = 0;
     let int = setInterval(() => {
         document.getElementById('dice-result').textContent = (Math.random() * 100).toFixed(2);
-        count++;
-        if (count > 10) {
+        if (++count > 10) {
             clearInterval(int);
             document.getElementById('dice-result').textContent = roll.toFixed(2);
-            
             let win = isHigher ? (roll > target) : (roll < target);
             let mult = (99 / (isHigher ? 100 - target : target));
-            
             if (win) {
-                let payout = bet * mult;
-                balance += payout; updateUI();
+                let payout = bet * mult; balance += payout; updateUI();
                 document.getElementById('dice-msg').className = 'msg win';
-                document.getElementById('dice-msg').textContent = `Выигрыш +${payout.toFixed(2)} (x${mult.toFixed(2)})`;
+                document.getElementById('dice-msg').textContent = `Выигрыш +${payout.toFixed(2)}`;
             } else {
                 document.getElementById('dice-msg').className = 'msg lose';
                 document.getElementById('dice-msg').textContent = `Проигрыш -${bet.toFixed(2)}`;
@@ -393,20 +451,13 @@ function rollDice(isHigher) {
 }
 
 // --- CRASH GAME ---
-let crashActive = false;
-let crashMult = 1.00;
-let crashAt = 0;
-let crashTimer = null;
-let crashStartTime = 0;
+let crashActive = false, crashMult = 1.00, crashAt = 0, crashTimer = null, crashStartTime = 0;
 
 function resetCrash() {
-    crashActive = false;
-    clearInterval(crashTimer);
+    crashActive = false; clearInterval(crashTimer);
     document.getElementById('crash-mult').textContent = '1.00x';
-    document.getElementById('crash-mult').style.color = 'var(--accent)';
     document.getElementById('crash-btn').textContent = 'Начать';
     document.getElementById('crash-btn').className = 'btn btn-green';
-    document.getElementById('crash-msg').textContent = '';
     drawGraph(0, 1);
 }
 
@@ -415,104 +466,55 @@ function crashAction() {
         let bet = BETS[betIndex];
         if (bet > balance) return alert('Мало средств!');
         balance -= bet; updateUI();
-        
-        crashActive = true;
-        crashMult = 1.00;
+        crashActive = true; crashMult = 1.00;
         crashAt = Math.max(1.01, 0.99 / (1 - Math.random()));
         crashStartTime = performance.now();
-        
         document.getElementById('crash-btn').textContent = 'ЗАБРАТЬ';
         document.getElementById('crash-btn').className = 'btn';
         
         crashTimer = setInterval(() => {
             let time = (performance.now() - crashStartTime) / 1000;
-            crashMult = Math.pow(1.07, time * 2); // Формула роста
-            
+            crashMult = Math.pow(1.07, time * 2);
             if (crashMult >= crashAt) {
-                // Crash
-                clearInterval(crashTimer);
-                crashActive = false;
+                clearInterval(crashTimer); crashActive = false;
                 document.getElementById('crash-mult').textContent = crashAt.toFixed(2) + 'x';
                 document.getElementById('crash-mult').style.color = 'var(--danger)';
                 document.getElementById('crash-btn').textContent = 'Начать';
                 document.getElementById('crash-btn').className = 'btn btn-green';
                 document.getElementById('crash-msg').className = 'msg lose';
-                document.getElementById('crash-msg').textContent = `Краш на ${crashAt.toFixed(2)}x! Потеряно ${BETS[betIndex].toFixed(2)}`;
-                drawGraph(time, crashAt, true);
+                document.getElementById('crash-msg').textContent = `Краш!`;
             } else {
                 document.getElementById('crash-mult').textContent = crashMult.toFixed(2) + 'x';
-                drawGraph(time, crashMult, false);
+                drawGraph(time, crashMult);
             }
         }, 50);
-        
     } else {
-        // Cashout
-        clearInterval(crashTimer);
-        crashActive = false;
-        let bet = BETS[betIndex];
-        let payout = bet * crashMult;
-        balance += payout; updateUI();
-        
+        clearInterval(crashTimer); crashActive = false;
+        let payout = BETS[betIndex] * crashMult; balance += payout; updateUI();
         document.getElementById('crash-btn').textContent = 'Начать';
         document.getElementById('crash-btn').className = 'btn btn-green';
         document.getElementById('crash-msg').className = 'msg win';
-        document.getElementById('crash-msg').textContent = `Забрали +${payout.toFixed(2)} на ${crashMult.toFixed(2)}x`;
+        document.getElementById('crash-msg').textContent = `Забрали +${payout.toFixed(2)}`;
     }
 }
 
-function drawGraph(time, mult, isCrash = false) {
-    const canvas = document.getElementById('crash-canvas');
-    const ctx = canvas.getContext('2d');
-    const w = canvas.width;
-    const h = canvas.height;
-    
+function drawGraph(time, mult) {
+    const ctx = document.getElementById('crash-canvas').getContext('2d');
+    const w = 600, h = 300;
     ctx.clearRect(0, 0, w, h);
-    
-    // Axes
-    ctx.strokeStyle = 'rgba(255,255,255,0.05)';
-    ctx.lineWidth = 2;
-    for(let i=1; i<5; i++) {
-        ctx.beginPath(); ctx.moveTo(0, h - (h/5)*i); ctx.lineTo(w, h - (h/5)*i); ctx.stroke();
-    }
-    
-    // Line
     if (time === 0) return;
     ctx.beginPath();
     ctx.moveTo(0, h);
-    
-    let maxX = Math.max(2, time * 1.2);
-    let maxY = Math.max(2, mult * 1.2);
-    
+    let maxX = Math.max(2, time * 1.2), maxY = Math.max(2, mult * 1.2);
     for (let t = 0; t <= time; t += 0.05) {
         let m = Math.pow(1.07, t * 2);
         if (m > mult) break;
-        let x = (t / maxX) * w;
-        let y = h - (m / maxY) * h;
-        ctx.lineTo(x, y);
+        ctx.lineTo((t / maxX) * w, h - (m / maxY) * h);
     }
-    let px = (time / maxX) * w;
-    let py = h - (mult / maxY) * h;
-    ctx.lineTo(px, py);
-    
-    ctx.strokeStyle = isCrash ? '#ef4444' : '#38bdf8';
-    ctx.lineWidth = 4;
-    ctx.lineJoin = 'round';
-    ctx.stroke();
-    
-    // Point
-    ctx.fillStyle = isCrash ? '#ef4444' : '#38bdf8';
-    ctx.beginPath();
-    ctx.arc(px, py, 6, 0, Math.PI * 2);
-    ctx.fill();
-    
-    if (isCrash) {
-        ctx.fillStyle = '#ef4444';
-        ctx.font = 'bold 30px sans-serif';
-        ctx.fillText('💥', px - 15, py - 15);
-    }
+    ctx.lineTo((time / maxX) * w, h - (mult / maxY) * h);
+    ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 4; ctx.stroke();
 }
 
-// Init
 openGame('lobby');
 </script>
 </body>
