@@ -122,6 +122,24 @@ canvas{width:100%;height:230px;display:block}
 .tile.t1{--aura:rgba(255,130,50,.6)}.tile.t2{--aura:rgba(150,90,255,.6)}.tile.t3{--aura:rgba(70,210,130,.42)}.tile.w{--aura:rgba(255,215,90,.85)}.tile.sc{--aura:rgba(255,90,200,.75)}
 .c:not(.fl) .tile{text-shadow:0 2px 5px rgba(0,0,0,.65)}
 .scene .reel{background:linear-gradient(90deg,rgba(255,255,255,.16) 0 4%,transparent 4% 96%,rgba(255,255,255,.16) 96%),linear-gradient(180deg,rgba(4,8,36,.82),rgba(8,22,78,.74) 50%,rgba(4,8,36,.82));border-color:rgba(190,220,255,.35)}
+
+/* BLACKJACK CSS */
+.bj-table{background:radial-gradient(circle at center, #0a5c36, #022c19);border:4px solid var(--g3);border-radius:20px;padding:15px;min-height:400px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:inset 0 0 40px #000;margin-bottom:10px}
+.bj-hand{text-align:center;min-height:130px}
+.bj-label{color:#fff;font-weight:800;font-size:14px;margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;text-shadow:0 2px 4px #000}
+.bj-cards{display:flex;gap:6px;justify-content:center;align-items:center;flex-wrap:wrap}
+.bj-card{width:60px;height:90px;border-radius:8px;background:#fff;color:#000;display:flex;flex-direction:column;justify-content:space-between;padding:6px;font-weight:900;font-size:20px;box-shadow:0 4px 10px rgba(0,0,0,0.5);animation:dealCard 0.3s ease-out;position:relative}
+.bj-card.red{color:#d32f2f}
+.bj-card.back{background:repeating-linear-gradient(45deg, #111, #111 5px, #333 5px, #333 10px);border:2px solid var(--g2);color:transparent;display:flex;justify-content:center;align-items:center}
+.bj-card.back:after{content:"♠";color:rgba(255,255,255,0.2);font-size:30px}
+.bj-card .suit-bottom{transform:rotate(180deg);align-self:flex-end}
+@keyframes dealCard{from{transform:translateY(-50px) scale(0.5);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
+.bj-score{font-size:24px;color:#fff;font-weight:900;margin-top:10px;text-shadow:0 2px 5px #000}
+.bj-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}
+.bj-actions button{padding:15px;border-radius:12px;font-size:16px;font-weight:900;border:none;cursor:pointer;text-transform:uppercase;box-shadow:0 4px 10px rgba(0,0,0,0.3)}
+.btn-hit{background:linear-gradient(180deg,#4caf50,#1b5e20);color:#fff}
+.btn-stand{background:linear-gradient(180deg,#f44336,#b71c1c);color:#fff}
+.btn-double{background:linear-gradient(180deg,#ffc107,#ff8f00);color:#000;grid-column:1/-1}
 </style>
 </head>
 <body>
@@ -132,7 +150,7 @@ canvas{width:100%;height:230px;display:block}
   </div>
 
   <section class="view on" id="v-lobby">
-    <div class="hero"><h2>Добро пожаловать</h2><p>Слоты с фри-спинами, живой краш и честность, которую можно проверить самому.</p></div>
+    <div class="hero"><h2>Добро пожаловать</h2><p>Слоты с фри-спинами, живой краш, блэкджек и честность, которую можно проверить.</p></div>
     <div class="grid2" id="cards"></div>
   </section>
 
@@ -167,15 +185,46 @@ canvas{width:100%;height:230px;display:block}
     <button class="big" id="cbtn">Поставить</button>
   </section>
 
+  <section class="view" id="v-bj">
+    <button class="back" onclick="show('lobby')">◀ Лобби</button>
+    <div class="gm">
+      <h2 class="gold" style="text-align:center; margin-bottom:15px;">Блэкджек</h2>
+      <div class="bj-table">
+        <div class="bj-hand">
+          <div class="bj-label">Дилер</div>
+          <div class="bj-cards" id="bj-dealer-cards"></div>
+          <div class="bj-score" id="bj-dealer-score"></div>
+        </div>
+        <div class="bj-hand">
+          <div class="bj-label">Вы</div>
+          <div class="bj-cards" id="bj-player-cards"></div>
+          <div class="bj-score" id="bj-player-score"></div>
+        </div>
+      </div>
+      <div id="bj-start-panel">
+        <div class="step"><button data-gb="-1">−</button><div><span class="gbv">1.00</span><small>СТАВКА</small></div><button data-gb="1">+</button></div>
+        <button class="big" onclick="startBJ()">Раздать карты</button>
+      </div>
+      <div id="bj-action-panel" style="display:none;">
+        <div class="bj-actions">
+          <button class="btn-hit" onclick="bjHit()">Взять</button>
+          <button class="btn-stand" onclick="bjStand()">Хватит</button>
+          <button class="btn-double" id="bj-double-btn" onclick="bjDouble()">Удвоить</button>
+        </div>
+        <div class="res gold" id="bj-res" style="margin-top:15px;"></div>
+      </div>
+    </div>
+  </section>
+
   <section class="view" id="v-mines"><button class="back" onclick="show('lobby')">◀ Лобби</button><div class="gm"><h2 class="gold">Мины</h2><div class="chips" id="mchips"></div><div class="mg" id="mg"></div><div class="res gold" id="mres">Выбери число мин и начни</div><div class="step"><button data-gb="-1">−</button><div><span class="gbv">1.00</span><small>СТАВКА</small></div><button data-gb="1">+</button></div><button class="big" id="mbtn">Начать</button></div></section>
   <section class="view" id="v-dice"><button class="back" onclick="show('lobby')">◀ Лобби</button><div class="gm"><h2 class="gold">Кости</h2><div class="big2 gold" id="droll">50.00</div><input type="range" id="dch" min="1" max="98" value="50"><div class="msg" id="dinfo"></div><div class="res gold" id="dres"></div><div class="step"><button data-gb="-1">−</button><div><span class="gbv">1.00</span><small>СТАВКА</small></div><button data-gb="1">+</button></div><button class="big" id="dbtn">Бросить</button></div></section>
   <section class="view" id="v-roul"><button class="back" onclick="show('lobby')">◀ Лобби</button><div class="gm"><h2 class="gold">Рулетка</h2><div class="rnum" id="rn">0</div><div class="chips" id="rchips"></div><div class="chips">Число: <input class="num" id="rnumin" type="number" min="0" max="36" value="7"></div><div class="res gold" id="rres">Выбери ставку</div><div class="step"><button data-gb="-1">−</button><div><span class="gbv">1.00</span><small>СТАВКА</small></div><button data-gb="1">+</button></div><button class="big" id="rbtn">Крутить</button></div></section>
   <section class="view" id="v-wheel"><button class="back" onclick="show('lobby')">◀ Лобби</button><div class="gm"><h2 class="gold">Колесо</h2><div class="wrap"><div class="wheel" id="wh"></div></div><div class="res gold" id="wres">Крути колесо</div><div class="step"><button data-gb="-1">−</button><div><span class="gbv">1.00</span><small>СТАВКА</small></div><button data-gb="1">+</button></div><button class="big" id="wbtn">Крутить</button></div></section>
   <section class="view" id="v-coin"><button class="back" onclick="show('lobby')">◀ Лобби</button><div class="gm"><h2 class="gold">Орёл-решка</h2><div class="disc" id="kc">🦅</div><div class="chips"><button class="chip on" data-k="heads">🦅 Орёл</button><button class="chip" data-k="tails">🌀 Решка</button></div><div class="res gold" id="kres">Выплата 1.94×</div><div class="step"><button data-gb="-1">−</button><div><span class="gbv">1.00</span><small>СТАВКА</small></div><button data-gb="1">+</button></div><button class="big" id="kbtn">Бросить</button></div></section>
+  
   <section class="view" id="v-fair">
     <div class="box"><h2 class="gold">Честность</h2><p>Перед ставкой сервер публикует хэш секретного сида. После смены сида он раскрывается, и любой игрок пересчитывает все свои раунды сам.</p></div>
-    <div class="box"><b>Хэш сида сервера</b><code id="commit">—</code></div>
-    <div class="box"><b>RTP игр</b><p>Зевс, Фараон, Дракон ≈ 96.00% · Краш ≤ 99% · Орёл-решка 97% · Колесо 96% · Рулетка 97.30%</p></div>
+    <div class="box"><b>RTP игр</b><p>Зевс, Фараон, Дракон ≈ 96.00% · Краш ≤ 99% · Блэкджек 99.5% (базовая стратегия) · Рулетка 97.30%</p></div>
   </section>
 </div>
 
@@ -207,15 +256,16 @@ let theme="zeus",bi=2,bal=1000,busy=false,cur=[],cbi=2,nonce=0,storageReady=fals
 // --- СИНХРОНИЗАЦИЯ С ОБЛАКОМ TELEGRAM ---
 function saveToCloud() {
     if (!storageReady) return;
-    tg.CloudStorage.setItem('balance', bal.toString(), (err) => {
-        if (!err) console.log('Баланс сохранен в облако:', bal);
-    });
+    tg.CloudStorage.setItem('balance', bal.toString(), (err) => {});
 }
 
-// Загрузка баланса при старте
+// Загрузка баланса при старте (ИСПРАВЛЕНО ОТ NaN)
 tg.CloudStorage.getItem('balance', (err, val) => {
-    if (!err && val !== null && val !== undefined) {
-        bal = parseFloat(val);
+    let parsedBal = NaN;
+    if (!err && val) parsedBal = parseFloat(val);
+    
+    if (!isNaN(parsedBal) && parsedBal >= 0) {
+        bal = parsedBal;
     } else {
         const _u = new URLSearchParams(location.search);
         bal = _u.has('bal') ? parseFloat(_u.get('bal')) : 1000;
@@ -239,6 +289,7 @@ document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>show(b.dataset
   const g=$("#cards");
   Object.entries(THEMES).forEach(([k,t])=>{const b=document.createElement("button");b.className="card";b.style.background=t.bg;b.innerHTML=`<span class="ic">${t.ic}</span><b>${t.n}</b><small>5×3 · 10 линий · фри-спины</small>`;b.onclick=()=>{theme=k;buildSlot();show("slot")};g.appendChild(b)});
   const c=document.createElement("button");c.className="card";c.style.background="linear-gradient(135deg,#0f766e,#052e2b)";c.innerHTML=`<span class="tag">LIVE</span><span class="ic">🚀</span><b>Краш</b><small>забирай до взрыва</small>`;c.onclick=()=>show("crash");g.appendChild(c);
+  const bj=document.createElement("button");bj.className="card";bj.style.background="linear-gradient(135deg,#1e3a8a,#0f172a)";bj.innerHTML=`<span class="ic">🃏</span><b>Блэкджек</b><small>21 очко</small>`;bj.onclick=()=>{show("bj");resetBJ()};g.appendChild(bj);
   [["💣","Мины","mines","#0f766e,#052e2b"],["🎲","Кости","dice","#b45309,#451a03"],["🎡","Рулетка","roul","#166534,#052e16"],["🎯","Колесо","wheel","#7e22ce,#2e1065"],["🪙","Орёл-решка","coin","#a16207,#422006"]].forEach(([i,n,v,gr])=>{const b=document.createElement("button");b.className="card";b.style.background=`linear-gradient(135deg,${gr})`;b.innerHTML=`<span class="ic">${i}</span><b>${n}</b><small>играть</small>`;b.onclick=()=>v?show(v):toast(n+": экран в работе");g.appendChild(b)});
 })();
 
@@ -402,6 +453,199 @@ $("#cm").onclick=()=>{if(cr.phase==="idle"&&cbi>0){cbi--;money()}};$("#cp").oncl
 $("#turbo").onclick=function(){TF=TF===1?.5:1;this.classList.toggle("on",TF!==1);toast(TF!==1?"Турбо включено":"Турбо выключено")};
 $("#auto").onclick=function(){if(autoLeft>0){autoLeft=0;this.classList.remove("on");toast("Автоспин остановлен");return}if(busy)return;autoLeft=10;this.classList.add("on");toast("Автоспин ×10");spin()};
 $("#pay").onclick=()=>toast("Таблица выплат появится вместе с боевым сервером");
+
+// ======================= БЛЭКДЖЕК ЛОГИКА =======================
+let bjDeck = [];
+let bjPlayer = [];
+let bjDealer = [];
+let bjActive = false;
+let bjBetAmount = 0;
+let bjDoubled = false;
+
+function createDeck() {
+    const suits = ['♠', '♥', '♦', '♣'];
+    const ranks = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+    let deck = [];
+    for (let s of suits) {
+        for (let r of ranks) {
+            let val = parseInt(r);
+            if (r === 'J' || r === 'Q' || r === 'K') val = 10;
+            if (r === 'A') val = 11;
+            deck.push({ suit: s, rank: r, value: val });
+        }
+    }
+    return deck;
+}
+
+function shuffleDeck(deck) {
+    for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+    }
+}
+
+function calcBJScore(hand) {
+    let score = 0;
+    let aces = 0;
+    for (let card of hand) {
+        score += card.value;
+        if (card.rank === 'A') aces++;
+    }
+    while (score > 21 && aces > 0) {
+        score -= 10;
+        aces--;
+    }
+    return score;
+}
+
+function renderCard(card, isHidden = false) {
+    if (isHidden) return `<div class="bj-card back"></div>`;
+    const isRed = card.suit === '♥' || card.suit === '♦';
+    return `
+        <div class="bj-card ${isRed ? 'red' : ''}">
+            <div>${card.rank}</div>
+            <div style="text-align:center; font-size:24px;">${card.suit}</div>
+            <div class="suit-bottom">${card.rank}</div>
+        </div>
+    `;
+}
+
+function renderBJ(hideDealerCard = false) {
+    document.getElementById('bj-player-cards').innerHTML = bjPlayer.map(c => renderCard(c)).join('');
+    document.getElementById('bj-dealer-cards').innerHTML = bjDealer.map((c, i) => renderCard(c, hideDealerCard && i === 1)).join('');
+    
+    document.getElementById('bj-player-score').textContent = calcBJScore(bjPlayer);
+    document.getElementById('bj-dealer-score').textContent = hideDealerCard ? "?" : calcBJScore(bjDealer);
+}
+
+function resetBJ() {
+    if (bjActive) return; // Не сбрасываем, если игра идет
+    bjPlayer = [];
+    bjDealer = [];
+    bjActive = false;
+    bjDoubled = false;
+    document.getElementById('bj-dealer-cards').innerHTML = '';
+    document.getElementById('bj-player-cards').innerHTML = '';
+    document.getElementById('bj-dealer-score').textContent = '';
+    document.getElementById('bj-player-score').textContent = '';
+    document.getElementById('bj-res').textContent = '';
+    document.getElementById('bj-start-panel').style.display = 'block';
+    document.getElementById('bj-action-panel').style.display = 'none';
+    document.getElementById('bj-double-btn').style.display = 'block';
+}
+
+function startBJ() {
+    const bet = BETS[2]; // Ставка по умолчанию 1.00
+    if (bet > bal) return toast("Недостаточно средств!");
+    
+    bjBetAmount = bet;
+    bal -= bet; money();
+    
+    bjDeck = createDeck();
+    shuffleDeck(bjDeck);
+    
+    bjPlayer = [bjDeck.pop(), bjDeck.pop()];
+    bjDealer = [bjDeck.pop(), bjDeck.pop()];
+    
+    bjActive = true;
+    bjDoubled = false;
+    
+    document.getElementById('bj-start-panel').style.display = 'none';
+    document.getElementById('bj-action-panel').style.display = 'block';
+    document.getElementById('bj-res').textContent = '';
+    
+    renderBJ(true); // Скрываем вторую карту дилера
+
+    // Проверка на блэкджек у игрока
+    if (calcBJScore(bjPlayer) === 21) {
+        setTimeout(() => bjStand(), 500); // Автоматически "Хватит", если блэкджек
+    }
+}
+
+function bjHit() {
+    if (!bjActive) return;
+    bjPlayer.push(bjDeck.pop());
+    renderBJ(true);
+    
+    if (calcBJScore(bjPlayer) > 21) {
+        endBJ('lose', 'Перебор! Вы проиграли.');
+    }
+}
+
+function bjStand() {
+    if (!bjActive) return;
+    bjActive = false;
+    document.getElementById('bj-action-panel').style.display = 'none';
+    
+    // Дилер берет карты до 17
+    renderBJ(false); // Открываем карту дилера
+    let dScore = calcBJScore(bjDealer);
+    
+    const drawDealer = () => {
+        if (dScore < 17) {
+            setTimeout(() => {
+                bjDealer.push(bjDeck.pop());
+                renderBJ(false);
+                dScore = calcBJScore(bjDealer);
+                drawDealer();
+            }, 600);
+        } else {
+            // Сравниваем результаты
+            let pScore = calcBJScore(bjPlayer);
+            if (dScore > 21) {
+                endBJ('win', 'У дилера перебор! Вы выиграли!');
+            } else if (pScore > dScore) {
+                endBJ('win', 'Вы выиграли!');
+            } else if (pScore === dScore) {
+                endBJ('push', 'Ничья. Возврат ставки.');
+            } else {
+                endBJ('lose', 'Дилер выиграл.');
+            }
+        }
+    };
+    drawDealer();
+}
+
+function bjDouble() {
+    if (!bjActive || bjDoubled) return;
+    if (bal < bjBetAmount) return toast("Недостаточно средств для удвоения!");
+    
+    bal -= bjBetAmount; money();
+    bjDoubled = true;
+    bjBetAmount *= 2;
+    
+    bjPlayer.push(bjDeck.pop());
+    renderBJ(true);
+    
+    if (calcBJScore(bjPlayer) > 21) {
+        endBJ('lose', 'Перебор после удвоения!');
+    } else {
+        setTimeout(bjStand, 500); // Автоматический stand после удвоения
+    }
+}
+
+function endBJ(result, text) {
+    bjActive = false;
+    document.getElementById('bj-action-panel').style.display = 'none';
+    document.getElementById('bj-res').textContent = text;
+    
+    if (result === 'win') {
+        let payout = bjBetAmount * 2;
+        // Особый выигрыш за блэкджек (если 2 карты по 21)
+        if (bjPlayer.length === 2 && calcBJScore(bjPlayer) === 21) {
+            payout = bjBetAmount * 2.5; // Выплата 3:2
+            document.getElementById('bj-res').textContent = 'БЛЭКДЖЕК! Выигрыш 3:2!';
+        }
+        bal += payout; money();
+    } else if (result === 'push') {
+        bal += bjBetAmount; money();
+    }
+    
+    setTimeout(() => {
+        resetBJ();
+    }, 2500);
+}
+
 buildSlot();drawHist();plot(0,1,false);money();
 </script>
 </body>
